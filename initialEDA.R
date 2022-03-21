@@ -1,9 +1,12 @@
-crimedata <- read.csv("data/dc-crimes-search-results.csv")
+#crimedata <- read.csv("data/dc-crimes-search-results.csv")
 
 crimedata[crimedata == "" | crimedata == " "] <- NA
 
 #subsetting the database to the data we want
 crimedata1 <- crimedata[, c(2,6,9,10,11,12,23,26,27)]
+
+#converting REPORT_DAT from character to date format 
+crimedata1$REPORT_DAT <- as.Date(crimedata1$REPORT_DAT, "%m/%d/%Y")
 
 #getting the data for 2020 and 2021
 crimedata2 <- crimedata[crimedata$YEAR == '2020', ]
@@ -30,6 +33,7 @@ table(is.na(crimedata3$START_DATE)) #3 missing values
 crimedata4 <- rbind(crimedata2, crimedata3)
 
 #converting REPORT_DAT from character to date format
+
 
 #figuring out which method of categorization would have the least number of missing values
 
