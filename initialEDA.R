@@ -4,8 +4,27 @@
 crimedata2 <- crimedata[crimedata$YEAR == '2020', ]
 crimedata3 <- crimedata[crimedata$YEAR == '2021', ]
 
+#changing the blank spaces to NAs
+crimedata2[crimedata2 == "" | crimedata2 == " "] <- NA
+crimedata3[crimedata3 == "" | crimedata3 == " "] <- NA
+
+#figuring out which date data to use 
+#year 2020
+table(is.na(crimedata2$END_DATE)) #22425 missing values
+table(is.na(crimedata2$START_DATE)) #1 missing value
+table(is.na(crimedata2$REPORT_DAT)) #0 missing values
+
+#year 2021
+table(is.na(crimedata3$REPORT_DAT)) #0 missing values
+table(is.na(crimedata3$END_DATE)) #2649 missing values
+table(is.na(crimedata3$START_DATE)) #3 missing values
+
+#based on the number of missing values we should use the variable REPORT_DAT as the date
+
 #putting the data for 2020 and 2021 in one database
 crimedata4 <- rbind(crimedata2, crimedata3)
+
+#converting REPORT_DAT from character to date format
 
 #figuring out which method of categorization would have the least number of missing values
 
