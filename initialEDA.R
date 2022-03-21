@@ -1,4 +1,9 @@
-#crimedata <- read.csv("data/dc-crimes-search-results.csv")
+crimedata <- read.csv("data/dc-crimes-search-results.csv")
+
+crimedata[crimedata == "" | crimedata == " "] <- NA
+
+#subsetting the database to the data we want
+crimedata1 <- crimedata[, c(2,6,9,10,11,12,23,26,27)]
 
 #getting the data for 2020 and 2021
 crimedata2 <- crimedata[crimedata$YEAR == '2020', ]
