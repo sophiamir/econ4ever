@@ -78,3 +78,26 @@ table(ward1$YEAR == 2020)
 
 #we can't really compare the changes across the wards unless we look at the area 
 #and population of the wards since the observations themselves are incidents  
+
+
+What types of offenses are more common at different times of year?
+  
+  ```{r, results='markup'}
+
+monthdata <- as.data.frame(month(as.POSIXlt(crimedata1$REPORT_DAT, format="%m/%d/%Y")))
+
+offensedata <- as.data.frame(as.factor(crimedata1$OFFENSE))
+
+setnames(monthdata, 'month(as.POSIXlt(crimedata1$REPORT_DAT, format = "%m/%d/%Y"))', 'month')
+setnames(offensedata, 'as.factor(crimedata1$OFFENSE)', "offense")
+
+
+crimedata1 %>% ggplot(aes(y = OFFENSE, fill = month(REPORT_DAT)) +
+                        geom_histogram(stat = "count", binwidth = 1) + 
+                        theme(plot.title = element_text(hjust = 0.5),
+                              panel.background = element_blank(),
+                              panel.border = element_rect(fill = NA),
+                              panel.grid.major.y = element_line(color = "light gray"),
+                              panel.grid.major.x = element_blank()) +
+                        labs(y = "Type of Offense", x = "Frequency", title = "Crime Occurrance At Different Times of Day", fill = "Time of Day")
+                      
