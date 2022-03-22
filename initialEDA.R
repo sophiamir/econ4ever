@@ -12,6 +12,10 @@ crimedata1$REPORT_DAT <- as.Date(crimedata1$REPORT_DAT, "%m/%d/%Y")
 crimedata2 <- crimedata[crimedata$YEAR == '2020', ]
 crimedata3 <- crimedata[crimedata$YEAR == '2021', ]
 
+table(crimedata1$offensekey)
+table(crimedata1$offense.text)
+table(crimedata1$OFFENSE)
+
 #changing the blank spaces to NAs
 crimedata2[crimedata2 == "" | crimedata2 == " "] <- NA
 crimedata3[crimedata3 == "" | crimedata3 == " "] <- NA
