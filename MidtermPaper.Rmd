@@ -1,0 +1,8 @@
+---
+title: "Midterm Paper"
+author: "econ4ever"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
