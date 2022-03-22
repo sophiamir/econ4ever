@@ -65,3 +65,27 @@ table(ward1$YEAR == 2020) #2020 - 2860，2021 - 4197
 
 #we can't really compare the changes across the wards unless we look at the area 
 #and population of the wards since the observations themselves are incidents  
+
+#remove unuseful columns
+modified_crime = subset(crimedata,select = c(2,9,10,11,12,23,26,27))
+
+#descriptive stats
+summary1 <- summary(modified_crime)
+install.packages("vtable")
+library(vtable)
+table1 <- sumtable(modified_crime)
+
+#relationship between ward and OFFENSE
+two_way = table(modified_crime$WARD, modified_crime$OFFENSE)
+two_way
+prop.table(two_way)#cell percentages
+prop.table(two_way,1)#row percentages
+prop.table(two_way,2)#column percentages
+chisq.test(two_way)
+#Since the p value is less than 0.05, we reject the null hypothesis that ward(geographical area) is not associated with offense type.
+
+#types of crimes happen during the day/evening/midnight
+two_way1 = table(modified_crime$SHIFT,modified_crime$OFFENSE)
+two_way1
+prop.table(two_way1,1)#row percentages
+#During the day, 
