@@ -105,3 +105,16 @@ crimedata1 %>% ggplot(aes(y = OFFENSE, fill = month(REPORT_DAT)) +
 
 chisq.test(crime$METHOD,crime$offensegroup)
 
+# total property incidences for both years 
+wardcrime21$totalproperty <- wardcrime21$`property|burglary`+wardcrime21$`property|motor vehicle theft`+wardcrime21$`property|theft f/auto`+wardcrime21$`property|theft/other`
+wardcrime20$totalproperty <- wardcrime20$`property|burglary`+wardcrime20$`property|motor vehicle theft`+wardcrime20$`property|theft f/auto`+wardcrime20$`property|theft/other`
+cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent)
+
+# total violent incidences for both years 
+wardcrime21$totalviolent <- wardcrime21$`violent|assault w/dangerous weapon`+wardcrime21$`violent|homicide`+wardcrime21$`violent|robbery`+wardcrime21$`violent|sex abuse`
+wardcrime20$totalviolent <- wardcrime20$`violent|assault w/dangerous weapon`+wardcrime20$`violent|homicide`+wardcrime20$`violent|robbery`+wardcrime20$`violent|sex abuse`
+
+# cor test
+cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent)
+cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent)
+
