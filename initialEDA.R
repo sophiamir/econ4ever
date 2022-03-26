@@ -71,6 +71,7 @@ modified_crime = subset(crimedata,select = c(2,9,10,11,12,23,26,27))
 
 #descriptive stats
 summary1 <- summary(modified_crime)
+summary1
 install.packages("vtable")
 library(vtable)
 table1 <- sumtable(modified_crime)
@@ -88,4 +89,5 @@ chisq.test(two_way)
 two_way1 = table(modified_crime$SHIFT,modified_crime$OFFENSE)
 two_way1
 prop.table(two_way1,1)#row percentages
-#During the day, 
+#During the day, the most frequent crime is theft for auto. The most frequent crime in the evening is theft for other things except autos. In the midnight, the most frequent crime is
+#theft for other things except autos.
