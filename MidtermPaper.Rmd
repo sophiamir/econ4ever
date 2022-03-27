@@ -455,4 +455,8 @@ wardcrime20 %>% ggplot(aes(y = `property|theft/other`, x = Ward)) +
        labs(x = "Ward", y = "Frequency of Theft", title = "Frequency of Theft in Different Wards for 2020")
 
 
+xkablesummary(wardcrime20)
+
+xkablesummary(wardcrime21)
+
 ```
