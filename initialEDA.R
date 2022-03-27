@@ -1,6 +1,6 @@
 #crimedata <- read.csv("data/dc-crimes-search-results.csv")
 
-<<<<<<< Updated upstream
+
 crimedata[crimedata == "" | crimedata == " "] <- NA
 
 #subsetting the database to the data we want
@@ -9,19 +9,17 @@ crimedata1 <- crimedata[, c(2,6,9,10,11,12,23,26,27)]
 #converting REPORT_DAT from character to date format 
 crimedata1$REPORT_DAT <- as.Date(crimedata1$REPORT_DAT, "%m/%d/%Y")
 
-=======
->>>>>>> Stashed changes
+
 #getting the data for 2020 and 2021
 crimedata2 <- crimedata[crimedata$YEAR == '2020', ]
 crimedata3 <- crimedata[crimedata$YEAR == '2021', ]
 
-<<<<<<< Updated upstream
+
 table(crimedata1$offensekey)
 table(crimedata1$offense.text)
 table(crimedata1$OFFENSE)
 
-=======
->>>>>>> Stashed changes
+
 #changing the blank spaces to NAs
 crimedata2[crimedata2 == "" | crimedata2 == " "] <- NA
 crimedata3[crimedata3 == "" | crimedata3 == " "] <- NA
@@ -43,13 +41,12 @@ table(is.na(crimedata3$START_DATE)) #3 missing values
 crimedata4 <- rbind(crimedata2, crimedata3)
 
 #converting REPORT_DAT from character to date format
-<<<<<<< Updated upstream
 
-=======
+
 crimedata4$REPORT_DAT <- as.Date(crimedata4$REPORT_DAT, "%m/%d/%Y")
 
 #now we need to figure out how to convert the date into just months or create a new variable for just months
->>>>>>> Stashed changes
+
 
 #figuring out which method of categorization would have the least number of missing values
 
@@ -89,13 +86,12 @@ table(ward2$YEAR == 2020)
 table(ward1$YEAR == 2020)
 
 #we can't really compare the changes across the wards unless we look at the area 
-<<<<<<< Updated upstream
 #and population of the wards since the observations themselves are incidents  
 
 
-What types of offenses are more common at different times of year?
+#What types of offenses are more common at different times of year?
   
-  ```{r, results='markup'}
+#  ```{r, results='markup'}
 
 monthdata <- as.data.frame(month(as.POSIXlt(crimedata1$REPORT_DAT, format="%m/%d/%Y")))
 
@@ -226,11 +222,9 @@ wardcrime20$totalviolent <- wardcrime20$`violent|assault w/dangerous weapon`+war
 cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent)
 cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent)
 
-<<<<<<< Updated upstream
+
 #Is the method of the crime (gun, knife, others) dependent on the offense type?
 chisq.test(crime$METHOD,crime$offensegroup)
-=======
-=======
+
 #and population of the wards since the observations themselves are incidents  
->>>>>>> Stashed changes
->>>>>>> Stashed changes
+
