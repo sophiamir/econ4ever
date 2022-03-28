@@ -1,5 +1,5 @@
-#crimedata <- read.csv("data/dc-crimes-search-results.csv")
 
+#crimedata <- read.csv("data/dc-crimes-search-results.csv")
 
 crimedata[crimedata == "" | crimedata == " "] <- NA
 
@@ -42,7 +42,6 @@ crimedata4 <- rbind(crimedata2, crimedata3)
 
 #converting REPORT_DAT from character to date format
 
-
 crimedata4$REPORT_DAT <- as.Date(crimedata4$REPORT_DAT, "%m/%d/%Y")
 
 #now we need to figure out how to convert the date into just months or create a new variable for just months
@@ -78,6 +77,14 @@ ward1 <- subset(crimedata4[crimedata4$WARD == 1, ])
 #looking at the number of observations for the years 2020 and 2021 for no real reason
 table(ward8$YEAR == 2020) #2020 - 2474, 2021 - 2930
 table(ward7$YEAR == 2020) #2020 - 3466, 2021 - 3595
+
+table(ward6$YEAR == 2020) #2020 - 3186, 2021 - 3797
+table(ward5$YEAR == 2020) #2020 - 3584, 2021 - 4413
+table(ward4$YEAR == 2020) #2020 - 2130，2021 - 2578
+table(ward3$YEAR == 2020) #2020 - 1240，2021 - 1441
+table(ward2$YEAR == 2020) #2020 - 3486，2021 - 5361
+table(ward1$YEAR == 2020) #2020 - 2860，2021 - 4197
+
 table(ward6$YEAR == 2020)
 table(ward5$YEAR == 2020)
 table(ward4$YEAR == 2020)
@@ -88,10 +95,34 @@ table(ward1$YEAR == 2020)
 #we can't really compare the changes across the wards unless we look at the area 
 #and population of the wards since the observations themselves are incidents  
 
+#remove unuseful columns
+modified_crime = subset(crimedata,select = c(2,9,10,11,12,23,26,27))
+
+#descriptive stats
+summary1 <- summary(modified_crime)
+summary1
+install.packages("vtable")
+library(vtable)
+table1 <- sumtable(modified_crime)
+
+#relationship between ward and OFFENSE
+two_way = table(modified_crime$WARD, modified_crime$OFFENSE)
+two_way
+prop.table(two_way)#cell percentages
+prop.table(two_way,1)#row percentages
+prop.table(two_way,2)#column percentages
+chisq.test(two_way)
+#Since the p value is less than 0.05, we reject the null hypothesis that ward(geographical area) is not associated with offense type.
+
+#types of crimes happen during the day/evening/midnight
+two_way1 = table(modified_crime$SHIFT,modified_crime$OFFENSE)
+two_way1
+prop.table(two_way1,1)#row percentages
+#During the day, the most frequent crime is theft for auto. The most frequent crime in the evening is theft for other things except autos. In the midnight, the most frequent crime is
+#theft for other things except autos.
 
 #What types of offenses are more common at different times of year?
   
-#  ```{r, results='markup'}
 
 monthdata <- as.data.frame(month(as.POSIXlt(crimedata1$REPORT_DAT, format="%m/%d/%Y")))
 
@@ -126,7 +157,6 @@ ward2 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
         axis.text.x = element_text(angle = 90)) +
   scale_y_continuous(breaks = c(seq(0,5000, by=500),9999)) +
   labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 2")
-
 
 
 ward3 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
@@ -181,7 +211,6 @@ ward6 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
   labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 6")
 
 
-
 ward7 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
   geom_histogram(binwidth = 1, stat = "count") +
   theme(plot.title = element_text(hjust = 0.5),
@@ -193,7 +222,6 @@ ward7 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
         axis.text.x = element_text(angle = 90)) +
   scale_y_continuous(breaks = c(seq(0,4000, by=300),9999)) +
   labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 7")
-
 
 
 ward8 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
