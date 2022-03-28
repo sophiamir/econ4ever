@@ -121,6 +121,7 @@ prop.table(two_way1,1)#row percentages
 #During the day, the most frequent crime is theft for auto. The most frequent crime in the evening is theft for other things except autos. In the midnight, the most frequent crime is
 #theft for other things except autos.
 
+<<<<<<< Updated upstream
 #What types of offenses are more common at different times of year?
   
 
@@ -256,3 +257,5 @@ chisq.test(crime$METHOD,crime$offensegroup)
 
 #and population of the wards since the observations themselves are incidents  
 
+=======
+>>>>>>> Stashed changes
