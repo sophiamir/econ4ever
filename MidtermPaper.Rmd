@@ -157,6 +157,14 @@ ward8 <- subset(crimedata1[crimedata1$WARD == 8,])
 
 ```
 
+Now, let's make a summary of the data.
+```{r}
+summary1 <- summary(crimedata1)
+summary1
+install.packages("vtable")
+table1 <- sumtable(crimedata1)
+```
+
 Let's check out crime incidents in the different wards.
 
 ```{r}
