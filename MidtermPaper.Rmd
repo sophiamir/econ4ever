@@ -36,15 +36,20 @@ options(scientific=T, digits = 3)
 ## Introduction
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 We have data over a 26 month period i.e. from January 2020 to the end of February 2022.
+=======
+We have data over a 26 month period i.e. from January 2020 to the end of February 2022. The URL for the data is ________________. 
+>>>>>>> Stashed changes
 
 =======
 We have data over a 26 month period i.e. from January 2020 to the end of February 2022. The URL for the data is https://dcatlas.dcgis.dc.gov/crimecards/. 
 >>>>>>> Stashed changes
 
 ```{r}
-
+#import dataset to environment 
 crimedata <- read.csv("data/dc-crimes-search-results.csv")
+
 #removing redundant variables
 crimedata1 <- crimedata[, c(2,6,9,10,11,12,23,26,27)]
 
@@ -58,7 +63,7 @@ xkablesummary(crimedata1)
 
 ```
 
-Let's get actual counts of the crimes committed in each category
+Let's get actual counts of the crimes committed in each category.
 
 ```{r}
 
@@ -74,11 +79,9 @@ table(crimedata21$offensekey)
 
 table(crimedata22$offensekey)
 
-
 ```
 
 Is there a correlation between time of day and type of crime committed? 
-
 
 ```{r, results='markup'}
 
@@ -95,17 +98,11 @@ crimedata1 %>% ggplot(aes(y = OFFENSE, fill = SHIFT)) +
   labs(y = "Type of Offense", x = "Frequency", title = "Crime Occurrance At Different Times of Day", 
       fill = "Time of Day")
 
-
-
-```
-
-```{r}
 chisq.test(crimedata1$SHIFT, crimedata1$OFFENSE)
 
 ```
 
-
-Type of crime most likely to occur in each ward? Can time of day be added here
+What type of crime is most likely to occur in each ward? 
 
 ```{r, results='markup'}
 
@@ -123,8 +120,7 @@ crimedata1 %>% ggplot(aes(x = as.factor(WARD), fill = OFFENSE)) +
 
 ```
 
-
-Is there a correlation between property crime and violent crime? (we could create a graph which has both types of crimes on the axes and the colors of the dots represent the 8 wards)
+Is there a correlation between property crime and violent crime? 
 
 ```{r}
 
@@ -134,7 +130,13 @@ vicrimes <- subset(crimedata1[crimedata1$offensegroup == "violent",])
 <<<<<<< Updated upstream
 ```
 
+<<<<<<< Updated upstream
 =======
+=======
+Let's group all violent incidences together and all property incidences together and see if there is a correlation.  
+
+```{r}
+>>>>>>> Stashed changes
 wardcrime21$totalproperty <- wardcrime21$`property|burglary`+wardcrime21$`property|motor vehicle theft`+wardcrime21$`property|theft f/auto`+wardcrime21$`property|theft/other`
 
 wardcrime20$totalproperty <- wardcrime20$`property|burglary`+wardcrime20$`property|motor vehicle theft`+wardcrime20$`property|theft f/auto`+wardcrime20$`property|theft/other`
@@ -148,6 +150,9 @@ cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent)
 ```
 
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 ```{r}
 #subsetting the data according to wards
@@ -170,7 +175,7 @@ ward8 <- subset(crimedata1[crimedata1$WARD == 8,])
 
 ```
 
-let's check out crime incidents in the different wards
+Let's check out crime incidents in the different wards.
 
 ```{r}
 
@@ -192,7 +197,7 @@ table(ward8$offensekey)
 
 ```
 
-now let's check out crime incidents in the different wards by year
+Now let's check out crime incidents in the different wards by year.
 
 ```{r}
 
@@ -284,8 +289,6 @@ table121 <- as.data.frame(table(ward121$offensekey))
 table1211 <- as.data.frame(pivot_wider(table121, names_from = "Var1", values_from =  "Freq"))
 table1211$Ward <- 1
 
-
-
 wardcrime21 <- rbind(crimetable21, table1211, table2211, table3211, table4211, table5211, table6211, table7211)
 
 write_csv(wardcrime21, "wardcrime21.csv")
@@ -328,17 +331,15 @@ table1200 <- as.data.frame(pivot_wider(table120, names_from = "Var1", values_fro
 table1200$Ward <- 1
 table1200$`property|arson` <- 0
 
-
 wardcrime20 <- rbind(table1200, table2200, table3200, table4200, table5200, table6200, table7200, table8200)
 
 write_csv(wardcrime20, "wardcrime20.csv")
 
 #by = c("Ward", "property|arson", "property|burglary", "property|motor vehicle theft", #"property|theft f/auto", "property|theft/other", "violent|assault w/dangerous weapon", #"violent|homicide", "violent|robbery", "violent|sex abuse")
 
-
 ```
 
-let's map out the wards
+Let's map out the wards.
 
 ```{r, results='markup'}
 
@@ -365,7 +366,6 @@ ward2 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
        axis.text.x = element_text(angle = 90)) +
   scale_y_continuous(breaks = c(seq(0,5000, by=500),9999)) +
   labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 2")
-
 
 
 ward3 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
@@ -420,7 +420,6 @@ ward6 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
   labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 6")
 
 
-
 ward7 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
   geom_histogram(binwidth = 1, stat = "count") +
   theme(plot.title = element_text(hjust = 0.5),
@@ -432,7 +431,6 @@ ward7 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
        axis.text.x = element_text(angle = 90)) +
   scale_y_continuous(breaks = c(seq(0,4000, by=300),9999)) +
   labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 7")
-
 
 
 ward8 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
@@ -460,7 +458,6 @@ offensedata <- as.data.frame(as.factor(crimedata1$OFFENSE))
 setnames(monthdata, 'month(as.POSIXlt(crimedata1$REPORT_DAT, format = "%m/%d/%Y"))', 'month')
 setnames(offensedata, 'as.factor(crimedata1$OFFENSE)', "offense")
 
-
 wardcrime20 %>% ggplot(aes(y = `property|theft/other`, x = Ward)) +
   geom_col(fill = "white", color = "blue") + 
   geom_text(label=wardcrime20$`property|theft/other`, vjust = 5) +
@@ -474,13 +471,13 @@ wardcrime20 %>% ggplot(aes(y = `property|theft/other`, x = Ward)) +
      scale_x_continuous(breaks = c(seq(1,8, by=1),9999)) +
        labs(x = "Ward", y = "Frequency of Theft", title = "Frequency of Theft in Different Wards for 2020")
 
-
 xkablesummary(wardcrime20)
 
 xkablesummary(wardcrime21)
 
 ```
 
+<<<<<<< Updated upstream
 ward4 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
   geom_histogram(binwidth = 1, stat = "count") +
   theme(plot.title = element_text(hjust = 0.5),
@@ -548,3 +545,10 @@ ward8 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
   labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 8")
 
 
+=======
+Is the method of the crime dependent on the offense type?
+
+```{r}
+chisq.test(crime$METHOD,crime$offensegroup)
+```
+>>>>>>> Stashed changes
