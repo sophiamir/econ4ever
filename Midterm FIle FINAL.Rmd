@@ -1,0 +1,564 @@
+---
+title: "Midterm Paper"
+author: "econ4ever"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    code_folding: hide
+    number_sections: false
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+```{r init, include=FALSE}
+# some of common options (and the defaults) are: 
+# include=T, eval=T, echo=T, results='hide'/'asis'/'markup',..., collapse=F, warning=T, message=T, error=T, cache=T, fig.width=6, fig.height=4, fig.dim=c(6,4) #inches, fig.align='left'/'center','right', 
+
+#all libraries go here
+library(ezids)
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(data.table)
+library(vtable)
+# knitr::opts_chunk$set(warning = F, results = "markup", message = F)
+knitr::opts_chunk$set(warning = F, results = "hide", message = F)
+options(scientific=T, digits = 3) 
+# options(scipen=9, digits = 3) 
+# ‘scipen’: integer. A penalty to be applied when deciding to print numeric values in fixed or exponential notation.  Positive values bias towards fixed and negative towards scientific notation: fixed notation will be preferred unless it is more than ‘scipen’ digits wider.
+# use scipen=999 to prevent scientific notation at all times
+```
+
+## Introduction
+
+We have data over a 26 month period i.e. from January 2020 to the end of February 2022. The URL for the data is https://dcatlas.dcgis.dc.gov/crimecards/. 
+
+```{r}
+#import dataset to environment 
+crimedata <- read.csv("data/dc-crimes-search-results.csv")
+
+#removing redundant variables
+crimedata1 <- crimedata[, c(2,6,9,10,11,12,23,26,27)]
+
+#changing the blank spaces to NAs
+crimedata1[crimedata1 == "" | crimedata1 == " "] <- NA
+
+#converting REPORT_DAT from character to date format 
+crimedata1$REPORT_DAT <- as.Date(crimedata1$REPORT_DAT, "%m/%d/%Y")
+
+xkablesummary(crimedata1)
+
+```
+
+Let's get actual counts of the crimes committed in each category.
+
+```{r}
+
+#dividing up the years
+
+crimedata20 <- subset(crimedata1[crimedata1$YEAR == 2020, ])
+crimedata21 <- subset(crimedata1[crimedata1$YEAR == 2021, ])
+crimedata22 <- subset(crimedata1[crimedata1$YEAR == 2022, ])
+
+table(crimedata20$offensekey)
+
+table(crimedata21$offensekey)
+
+table(crimedata22$offensekey)
+
+```
+
+Is there a correlation between time of day and type of crime committed? 
+
+```{r, results='markup'}
+
+crimedata1 %>% ggplot(aes(y = OFFENSE, fill = SHIFT)) +
+  geom_histogram(stat = "count", binwidth = 1) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "light gray"),
+      #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank()) +
+    #  axis.text.x = element_text(angle = 90)) +
+  
+  labs(y = "Type of Offense", x = "Frequency", title = "Crime Occurrance At Different Times of Day", 
+      fill = "Time of Day")
+
+chisq.test(crimedata1$SHIFT, crimedata1$OFFENSE)
+
+```
+
+What type of crime is most likely to occur in each ward? 
+
+```{r, results='markup'}
+
+crimedata1 %>% ggplot(aes(x = as.factor(WARD), fill = OFFENSE)) +
+  geom_histogram(stat = "count") +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "light gray"),
+      #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank()) +
+  #scale_x_continuous(breaks = c(seq(1,8, by=1),9999)) +
+ labs(x = "Ward", fill = "Type of Offense", y = "Frequency", title = "Types of Crimes Common in Different Wards")
+
+
+```
+
+Is there a correlation between property crime and violent crime? 
+
+```{r}
+
+propcrimes <- subset(crimedata1[crimedata1$offensegroup == "property",])
+vicrimes <- subset(crimedata1[crimedata1$offensegroup == "violent",])
+
+```
+
+
+
+
+
+```{r}
+#subsetting the data according to wards
+
+ward1 <- subset(crimedata1[crimedata1$WARD == 1,])
+
+ward2 <- subset(crimedata1[crimedata1$WARD == 2,])
+
+ward3 <- subset(crimedata1[crimedata1$WARD == 3,])
+
+ward4 <- subset(crimedata1[crimedata1$WARD == 4,])
+
+ward5 <- subset(crimedata1[crimedata1$WARD == 5,])
+
+ward6 <- subset(crimedata1[crimedata1$WARD == 6,])
+
+ward7 <- subset(crimedata1[crimedata1$WARD == 7,])
+
+ward8 <- subset(crimedata1[crimedata1$WARD == 8,])
+
+```
+
+Now, let's make a summary of the data.
+
+```{r, results='markup'}
+summary1 <- summary(crimedata1)
+summary1
+table1 <- sumtable(crimedata1)
+```
+
+Let's check out crime incidents in the different wards.
+
+```{r, results='markup'}
+#creating summary tables of the offense data by ward
+
+table(ward1$offensekey)
+
+table(ward2$offensekey)
+
+table(ward3$offensekey)
+
+table(ward4$offensekey)
+
+table(ward5$offensekey)
+
+table(ward6$offensekey)
+
+table(ward7$offensekey)
+
+table(ward8$offensekey)
+
+```
+
+Now let's check out crime incidents in the different wards by year.
+
+```{r, results='markup'}
+
+ward120 <- subset(ward1[ward1$YEAR == 2020, ])
+ward121 <- subset(ward1[ward1$YEAR == 2021, ])
+
+ward220 <- subset(ward2[ward2$YEAR == 2020, ])
+ward221 <- subset(ward2[ward2$YEAR == 2021, ])
+
+ward320 <- subset(ward3[ward3$YEAR == 2020, ])
+ward321 <- subset(ward3[ward3$YEAR == 2021, ])
+
+ward420 <- subset(ward4[ward4$YEAR == 2020, ])
+ward421 <- subset(ward4[ward4$YEAR == 2021, ])
+
+ward520 <- subset(ward5[ward5$YEAR == 2020, ])
+ward521 <- subset(ward5[ward5$YEAR == 2021, ])
+
+ward620 <- subset(ward6[ward6$YEAR == 2020, ])
+ward621 <- subset(ward6[ward6$YEAR == 2021, ])
+
+ward720 <- subset(ward7[ward7$YEAR == 2020, ])
+ward721 <- subset(ward7[ward7$YEAR == 2021, ])
+
+ward820 <- subset(ward8[ward8$YEAR == 2020, ])
+ward821 <- subset(ward8[ward8$YEAR == 2021, ])
+
+
+table(ward120$offensekey)
+table(ward121$offensekey)
+
+table(ward220$offensekey)
+table(ward221$offensekey)
+
+table(ward320$offensekey)
+table(ward321$offensekey)
+
+table(ward420$offensekey)
+table(ward421$offensekey)
+
+
+table(ward520$offensekey)
+table(ward521$offensekey)
+
+table(ward620$offensekey)
+table(ward621$offensekey)
+
+table(ward720$offensekey)
+table(ward721$offensekey)
+
+table(ward820$offensekey)
+table(ward821$offensekey)
+
+#saving the tables as dataframes to access/play with data
+
+table821 <- as.data.frame(table(ward821$offensekey))
+crimetable21 <- as.data.frame(pivot_wider(table821, names_from = "Var1", values_from =  "Freq"))
+crimetable21$Ward <- 8
+
+table721 <- as.data.frame(table(ward721$offensekey))
+table7211 <- as.data.frame(pivot_wider(table721, names_from = "Var1", values_from =  "Freq"))
+table7211$Ward <- 7
+
+table621 <- as.data.frame(table(ward621$offensekey))
+table6211 <- as.data.frame(pivot_wider(table621, names_from = "Var1", values_from =  "Freq"))
+table6211$Ward <- 6
+table6211$`property|arson` <- 0
+
+table521 <- as.data.frame(table(ward521$offensekey))
+table5211 <- as.data.frame(pivot_wider(table521, names_from = "Var1", values_from =  "Freq"))
+table5211$Ward <- 5
+table5211$`property|arson` <- 0
+
+table421 <- as.data.frame(table(ward421$offensekey))
+table4211 <- as.data.frame(pivot_wider(table421, names_from = "Var1", values_from =  "Freq"))
+table4211$Ward <- 4
+table4211$`property|arson` <- 0
+
+table321 <- as.data.frame(table(ward321$offensekey))
+table3211 <- as.data.frame(pivot_wider(table321, names_from = "Var1", values_from =  "Freq"))
+table3211$Ward <- 3
+table3211$`property|arson` <- 0
+
+table221 <- as.data.frame(table(ward221$offensekey))
+table2211 <- as.data.frame(pivot_wider(table221, names_from = "Var1", values_from =  "Freq"))
+table2211$Ward <- 2
+
+table121 <- as.data.frame(table(ward121$offensekey))
+table1211 <- as.data.frame(pivot_wider(table121, names_from = "Var1", values_from =  "Freq"))
+table1211$Ward <- 1
+
+wardcrime21 <- rbind(crimetable21, table1211, table2211, table3211, table4211, table5211, table6211, table7211)
+
+write_csv(wardcrime21, "wardcrime21.csv")
+
+#repeating the process for the year 2020
+
+table820 <- as.data.frame(table(ward820$offensekey))
+table8200 <- as.data.frame(pivot_wider(table820, names_from = "Var1", values_from =  "Freq"))
+table8200$Ward <- 8
+table8200$`property|arson` <- 0
+
+table720 <- as.data.frame(table(ward720$offensekey))
+table7200 <- as.data.frame(pivot_wider(table720, names_from = "Var1", values_from =  "Freq"))
+table7200$Ward <- 7
+
+table620 <- as.data.frame(table(ward620$offensekey))
+table6200 <- as.data.frame(pivot_wider(table620, names_from = "Var1", values_from =  "Freq"))
+table6200$Ward <- 6
+
+table520 <- as.data.frame(table(ward520$offensekey))
+table5200 <- as.data.frame(pivot_wider(table520, names_from = "Var1", values_from =  "Freq"))
+table5200$Ward <- 5
+
+table420 <- as.data.frame(table(ward420$offensekey))
+table4200 <- as.data.frame(pivot_wider(table420, names_from = "Var1", values_from =  "Freq"))
+table4200$Ward <- 4
+table4200$`property|arson` <- 0
+
+table320 <- as.data.frame(table(ward320$offensekey))
+table3200 <- as.data.frame(pivot_wider(table320, names_from = "Var1", values_from =  "Freq"))
+table3200$Ward <- 3
+table3200$`property|arson` <- 0
+
+table220 <- as.data.frame(table(ward220$offensekey))
+table2200 <- as.data.frame(pivot_wider(table220, names_from = "Var1", values_from =  "Freq"))
+table2200$Ward <- 2
+
+table120 <- as.data.frame(table(ward120$offensekey))
+table1200 <- as.data.frame(pivot_wider(table120, names_from = "Var1", values_from =  "Freq"))
+table1200$Ward <- 1
+table1200$`property|arson` <- 0
+
+wardcrime20 <- rbind(table1200, table2200, table3200, table4200, table5200, table6200, table7200, table8200)
+
+write_csv(wardcrime20, "wardcrime20.csv")
+
+#by = c("Ward", "property|arson", "property|burglary", "property|motor vehicle theft", #"property|theft f/auto", "property|theft/other", "violent|assault w/dangerous weapon", #"violent|homicide", "violent|robbery", "violent|sex abuse")
+
+```
+
+
+Let's group all violent incidences together and all property incidences together and see if there is a correlation.  
+
+```{r, results='markup'}
+wardcrime21$totalproperty <- wardcrime21$`property|burglary`+wardcrime21$`property|motor vehicle theft`+wardcrime21$`property|theft f/auto`+wardcrime21$`property|theft/other`
+
+wardcrime20$totalproperty <- wardcrime20$`property|burglary`+wardcrime20$`property|motor vehicle theft`+wardcrime20$`property|theft f/auto`+wardcrime20$`property|theft/other`
+
+wardcrime21$totalviolent <- wardcrime21$`violent|assault w/dangerous weapon`+wardcrime21$`violent|homicide`+wardcrime21$`violent|robbery`+wardcrime21$`violent|sex abuse`
+
+wardcrime20$totalviolent <- wardcrime20$`violent|assault w/dangerous weapon`+wardcrime20$`violent|homicide`+wardcrime20$`violent|robbery`+wardcrime20$`violent|sex abuse`
+
+cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent)
+cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent)
+```
+
+
+
+Let's map out the wards.
+
+```{r, results='markup'}
+
+ward1 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
+  geom_histogram(binwidth = 1, stat = "count") +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "light pink"),
+      #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank(),
+       axis.text.x = element_text(angle = 90)) +
+  scale_y_continuous(breaks = c(seq(0,5000, by=500),9999)) +labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 1")
+
+
+ward2 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
+  geom_histogram(binwidth = 1, stat = "count") +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "light blue"),
+      #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank(),
+       axis.text.x = element_text(angle = 90)) +
+  scale_y_continuous(breaks = c(seq(0,5000, by=500),9999)) +
+  labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 2")
+
+
+ward3 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
+  geom_histogram(binwidth = 1, stat = "count") +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "light green"),
+      #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank(),
+       axis.text.x = element_text(angle = 90)) +
+  scale_y_continuous(breaks = c(seq(0,2000, by=200),9999)) +
+  labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 3")
+
+
+ward4 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
+  geom_histogram(binwidth = 1, stat = "count") +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "gold"),
+      #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank(),
+       axis.text.x = element_text(angle = 90)) +
+  scale_y_continuous(breaks = c(seq(0,2000, by=200),9999)) +
+  labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 4")
+
+
+ward5 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
+  geom_histogram(binwidth = 1, stat = "count") +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "turquoise"),
+      #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank(),
+       axis.text.x = element_text(angle = 90)) +
+  scale_y_continuous(breaks = c(seq(0,3000, by=300),9999)) +
+  labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 5")
+
+
+ward6 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
+  geom_histogram(binwidth = 1, stat = "count") +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "purple"),
+      #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank(),
+       axis.text.x = element_text(angle = 90)) +
+  scale_y_continuous(breaks = c(seq(0,4000, by=400),9999)) +
+  labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 6")
+
+
+ward7 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
+  geom_histogram(binwidth = 1, stat = "count") +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "lime green"),
+      #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank(),
+       axis.text.x = element_text(angle = 90)) +
+  scale_y_continuous(breaks = c(seq(0,4000, by=300),9999)) +
+  labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 7")
+
+
+ward8 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
+  geom_histogram(binwidth = 1, stat = "count") +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "sky blue"),
+      #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank(),
+       axis.text.x = element_text(angle = 90)) +
+  scale_y_continuous(breaks = c(seq(0,4000, by=300),9999)) +
+  labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 8")
+
+```
+
+What types of offenses are more common at different times of year?
+
+```{r, results='markup'}
+
+monthdata <- as.data.frame(month(as.POSIXlt(crimedata1$REPORT_DAT, format="%m/%d/%Y")))
+
+offensedata <- as.data.frame(as.factor(crimedata1$OFFENSE))
+
+setnames(monthdata, 'month(as.POSIXlt(crimedata1$REPORT_DAT, format = "%m/%d/%Y"))', 'month')
+setnames(offensedata, 'as.factor(crimedata1$OFFENSE)', "offense")
+
+wardcrime20 %>% ggplot(aes(y = `property|theft/other`, x = Ward)) +
+  geom_col(fill = "white", color = "blue") + 
+  geom_text(label=wardcrime20$`property|theft/other`, vjust = 5) +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "sky blue"),
+      #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank()) +
+     #  axis.text.x = element_text(angle = 90)) +
+     scale_x_continuous(breaks = c(seq(1,8, by=1),9999)) +
+       labs(x = "Ward", y = "Frequency of Theft", title = "Frequency of Theft in Different Wards for 2020")
+
+xkablesummary(wardcrime20)
+
+xkablesummary(wardcrime21)
+
+ward4 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
+  geom_histogram(binwidth = 1, stat = "count") +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "gold"),
+        #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank(),
+        axis.text.x = element_text(angle = 90)) +
+  scale_y_continuous(breaks = c(seq(0,2000, by=200),9999)) +
+  labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 4")
+
+
+ward5 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
+  geom_histogram(binwidth = 1, stat = "count") +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "turquoise"),
+        #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank(),
+        axis.text.x = element_text(angle = 90)) +
+  scale_y_continuous(breaks = c(seq(0,3000, by=300),9999)) +
+  labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 5")
+
+
+ward6 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
+  geom_histogram(binwidth = 1, stat = "count") +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "purple"),
+        #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank(),
+        axis.text.x = element_text(angle = 90)) +
+  scale_y_continuous(breaks = c(seq(0,4000, by=400),9999)) +
+  labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 6")
+
+
+
+ward7 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
+  geom_histogram(binwidth = 1, stat = "count") +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "lime green"),
+        #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank(),
+        axis.text.x = element_text(angle = 90)) +
+  scale_y_continuous(breaks = c(seq(0,4000, by=300),9999)) +
+  labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 7")
+
+
+
+ward8 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
+  geom_histogram(binwidth = 1, stat = "count") +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill = NA),
+        panel.grid.major.y = element_line(color = "sky blue"),
+        #  panel.grid.minor.y = element_line(color = "black"),
+        panel.grid.major.x = element_blank(),
+        axis.text.x = element_text(angle = 90)) +
+  scale_y_continuous(breaks = c(seq(0,4000, by=300),9999)) +
+  labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 8")
+```
+
+Is the method of the crime dependent on the offense type?
+
+```{r, results='markup'}
+chisq.test(crimedata1$METHOD,crimedata1$offensegroup)
+```
+
+Is there relationship between variables ward and OFFENSE?
+```{r, results='markup'}
+two_way = table(crimedata1$WARD, crimedata1$OFFENSE)
+two_way
+prop.table(two_way)#cell percentages
+prop.table(two_way,1)#row percentages
+prop.table(two_way,2)#column percentages
+chisq.test(two_way)
+```
+
+Which kind of crime happen most frequently during the day/evening/midnight?
+```{r, results='markup'}
+two_way1 = table(crimedata1$SHIFT,crimedata1$OFFENSE)
+two_way1
+prop.table(two_way1,1)
+```
+
