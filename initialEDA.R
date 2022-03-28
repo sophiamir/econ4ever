@@ -257,5 +257,3 @@ chisq.test(crime$METHOD,crime$offensegroup)
 
 #and population of the wards since the observations themselves are incidents  
 
-=======
->>>>>>> Stashed changes

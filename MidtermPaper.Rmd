@@ -24,7 +24,7 @@ library(ggplot2)
 library(tidyverse)
 library(lubridate)
 library(data.table)
-
+library(vtable)
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
 options(scientific=T, digits = 3) 
@@ -157,9 +157,12 @@ ward8 <- subset(crimedata1[crimedata1$WARD == 8,])
 
 ```
 
+
+
 Let's check out crime incidents in the different wards.
 
 ```{r}
+#creating summary tables of the offense data by ward
 
 table(ward1$offensekey)
 
