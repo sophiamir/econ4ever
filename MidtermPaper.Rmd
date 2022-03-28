@@ -24,7 +24,7 @@ library(ggplot2)
 library(tidyverse)
 library(lubridate)
 library(data.table)
-
+library(vtable)
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
 options(scientific=T, digits = 3) 
@@ -35,16 +35,7 @@ options(scientific=T, digits = 3)
 
 ## Introduction
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-We have data over a 26 month period i.e. from January 2020 to the end of February 2022.
-=======
-We have data over a 26 month period i.e. from January 2020 to the end of February 2022. The URL for the data is ________________. 
->>>>>>> Stashed changes
-
-=======
 We have data over a 26 month period i.e. from January 2020 to the end of February 2022. The URL for the data is https://dcatlas.dcgis.dc.gov/crimecards/. 
->>>>>>> Stashed changes
 
 ```{r}
 #import dataset to environment 
@@ -127,16 +118,13 @@ Is there a correlation between property crime and violent crime?
 propcrimes <- subset(crimedata1[crimedata1$offensegroup == "property",])
 vicrimes <- subset(crimedata1[crimedata1$offensegroup == "violent",])
 
-<<<<<<< Updated upstream
 ```
 
-<<<<<<< Updated upstream
-=======
-=======
+ 
+
 Let's group all violent incidences together and all property incidences together and see if there is a correlation.  
 
 ```{r}
->>>>>>> Stashed changes
 wardcrime21$totalproperty <- wardcrime21$`property|burglary`+wardcrime21$`property|motor vehicle theft`+wardcrime21$`property|theft f/auto`+wardcrime21$`property|theft/other`
 
 wardcrime20$totalproperty <- wardcrime20$`property|burglary`+wardcrime20$`property|motor vehicle theft`+wardcrime20$`property|theft f/auto`+wardcrime20$`property|theft/other`
@@ -150,10 +138,7 @@ cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent)
 ```
 
 
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
 ```{r}
 #subsetting the data according to wards
 
@@ -175,9 +160,19 @@ ward8 <- subset(crimedata1[crimedata1$WARD == 8,])
 
 ```
 
+Now, let's make a summary of the data.
+
+```{r}
+summary1 <- summary(crimedata1)
+summary1
+install.packages("vtable")
+table1 <- sumtable(crimedata1)
+```
+
 Let's check out crime incidents in the different wards.
 
 ```{r}
+#creating summary tables of the offense data by ward
 
 table(ward1$offensekey)
 
@@ -477,7 +472,6 @@ xkablesummary(wardcrime21)
 
 ```
 
-<<<<<<< Updated upstream
 ward4 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
   geom_histogram(binwidth = 1, stat = "count") +
   theme(plot.title = element_text(hjust = 0.5),
@@ -545,10 +539,8 @@ ward8 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
   labs(x = "Type of Offense", fill = "Time", y = "Frequency", title = "Types of Crimes Common at Different Times of Day in Ward 8")
 
 
-=======
 Is the method of the crime dependent on the offense type?
 
 ```{r}
 chisq.test(crime$METHOD,crime$offensegroup)
 ```
->>>>>>> Stashed changes
