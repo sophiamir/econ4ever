@@ -473,4 +473,19 @@ Is the method of the crime dependent on the offense type?
 chisq.test(crime$METHOD,crime$offensegroup)
 ```
 
+Is there relationship between variables ward and OFFENSE?
+```{r}
+two_way = table(crimedata1$WARD, crimedata1$OFFENSE)
+two_way
+prop.table(two_way)#cell percentages
+prop.table(two_way,1)#row percentages
+prop.table(two_way,2)#column percentages
+chisq.test(two_way)
+```
 
+Which kind of crime happen most frequently during the day/evening/midnight?
+```{r}
+two_way1 = table(modified_crime$SHIFT,modified_crime$OFFENSE)
+two_way1
+prop.table(two_way1,1)
+```
