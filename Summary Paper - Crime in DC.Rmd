@@ -1,28 +1,79 @@
 ---
 title: 'Summary Paper: Crime in DC'
-output: html_document
+author: "Group 4: Rebecca Felix, Sophia Mir, Jiaxi Liu"
+subtitle: 'DATS 6101 - Spring 2022'
+# date: "today"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: hide
+    number_sections: false
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+__Introduction - Sophia__ \
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+__Theoretical Framework and Data Source- Sophia__ \
 
-```{r cars}
-summary(cars)
-```
 
-## Including Plots
+__Data Description - Jiaxi__ \
+	__Types of variables and summary__ \
+	
+	
+__Summary Statistics  - Rebecca__ \
 
-You can also embed plots, for example:
+It is clear that total crime incidences were lower in 2020 than in 2021 for every type of crime besides arson and burglary. The beginning of the COVID-19 pandemic restrictions took place during this time, and we suspect that this is a factor as to why crime rates are lower in 2020. Activities and events were cancelled and people were isolating at home which may have caused less crime activity. Overall, total crime increased by 2,840 incidents. \
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+__By ward and year- Rebecca__ \
+
+Then, in order to examine the data in each of the different locations and compare them to one another, we aggregated the crime statistics by ward, type of offense, and year. \
+
+(insert code here?)
+
+Across each type of crime, Ward 3 had the lowest amount of incidences. Ward 2 has the highest total amount of crime with Ward 2 following. \
+
+Ward 1 experienced a total increase of 1,337 crimes from 2020 to 2021. Property theft is the most frequent crime while property theft from an automobile saw the largest increase. \
+
+Ward 2 experienced a total increase of 1,875 crimes from 2020 to 2021. Similar to Ward 1, property theft is the most frequent crime while property theft from an automobile saw the largest increase. Both burglary and arson decreased from 2020 to 2021. \
+
+Ward 3 experienced a total increase of only 201 crimes from 2020 to 2021. Burglary and motor vehicle theft decreased by 41 and 44, respectively, but property theft increased by 229. Violent homicide also decreased by 1. \
+
+Ward 4 experienced a total increase of 448 crimes from 2020 to 2021. Violent robbery decreased by 2 while property theft from an automobile was the most frequent crime and had the largest increase. \
+
+Ward 5 experienced a total increase of 829 crimes from 2020 to 2021. Property theft was the most frequent crime in 2020 and property theft from an automobile increased the most and was the most frequent crime in 2021. Arson decreased by 3. \
+
+Ward 6 experienced a total increase of 611 crimes from 2020 to 2021. Property theft was the most frequent crime in both years and experienced the largest increase as well. Arson and violent homicide decreased. \
+
+Ward 7 experienced an increase of only 129 crimes from 2020 to 2021. Property theft from an automobile was the most frequent crime in 2020 but saw the largest decrease, while property theft saw the largest increase and was the most frequent crime in 2021. 
+
+Ward 8 experienced an increase of 456 crimes from 2020 to 2021. Property theft was the most frequent crime and also saw the largest increase in incidences in this area. 
+
+__By time of day - Jiaxi__ \
+	
+__Correlation coefficient - Jiaxi__ \
+	
+__Hypothesis testing - Sophia__ \
+	
+__What does it all mean/Discussion - everybody writes small summaries of their parts and we compile it together__ \
+
+In conclusion, it is clear that property theft is the most frequent crime in DC. 
+
+__Disclosure on Bias- Rebecca__ \
+
+Because crime is self-reported, this database will not include incidences of crime that are not reported or were not humored by law enforcement. Some crimes may be more or less likely to be reported to law enforcement due to societal pressures, stigma, etc. Because of this potential for underrepresentation, this data may inaccurately reflect the true parameters of crime in DC. \
+
+__Future Research - Rebecca__ \
+
+Further research on this topic should address other potentially relevant variables that may help understand incidences of crime in DC. Variables that may be of interest and should be obtained for each ward include population, demographics, income distribution, age distribution, and unemployment levels. \
+
