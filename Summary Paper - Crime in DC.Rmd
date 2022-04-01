@@ -19,3 +19,29 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Introduction - Sophia 
+
+
+Theoretical Framework and Data Source- Sophia
+
+
+Data Description - Jiaxi
+	Types of variables and summary 
+	
+	
+Summary Statistics by Offense Type 
+	By ward - Rebecca
+	
+	By year - Rebecca
+	
+	By time of day - Jiaxi
+	
+	Correlation coefficient - Jiaxi
+	
+	Hypothesis testing - Sophia
+	
+What does it all mean/Discussion - everybody writes small summaries of their parts and we compile it together 
+
+
+Biases and Directions for Future Research - Rebecca
+
