@@ -19,29 +19,36 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Introduction - Sophia 
+__Introduction - Sophia__
 
 
-Theoretical Framework and Data Source- Sophia
+__Theoretical Framework and Data Source- Sophia__
 
 
-Data Description - Jiaxi
-	Types of variables and summary 
+__Data Description - Jiaxi__
+	__Types of variables and summary__
 	
 	
-Summary Statistics by Offense Type 
-	By ward - Rebecca
-	
-	By year - Rebecca
-	
-	By time of day - Jiaxi
-	
-	Correlation coefficient - Jiaxi
-	
-	Hypothesis testing - Sophia
-	
-What does it all mean/Discussion - everybody writes small summaries of their parts and we compile it together 
+__Summary Statistics  - Rebecca__
+
+It is clear that total crime incidences were lower in 2020 than in 2021 for every type of crime besides arson and burglary. The beginning of the COVID-19 pandemic restrictions took place during this time, and we suspect that this is a factor as to why crime rates are lower in 2020. Activities and events were cancelled and people were isolating at home which may have caused less crime activity. Overall, total crime increased by 2,840 incidents.
 
 
-Biases and Directions for Future Research - Rebecca
+
+
+__By ward and year- Rebecca__
+In order to examine the data in each of the different locations, we aggregated the crime statistics by ward, type of offense, and year. 
+
+(insert code here?)
+
+	__By time of day - Jiaxi__
+	
+	__Correlation coefficient - Jiaxi__
+	
+	__Hypothesis testing - Sophia__
+	
+__What does it all mean/Discussion - everybody writes small summaries of their parts and we compile it together__
+
+
+__Biases and Directions for Future Research - Rebecca__
 
