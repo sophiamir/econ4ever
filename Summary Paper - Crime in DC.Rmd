@@ -41,7 +41,13 @@ Then, in order to examine the data in each of the different locations and compar
 
 Across each type of crime, Ward 3 had the lowest amount of incidences. Ward 2 has the highest total amount of crime with Ward 2 following. 
 
+Ward 1 experienced a total increase of 1,337 crimes from 2020 to 2021. Property theft is the most frequent crime while property theft from an automobile saw the largest increase. 
 
+Ward 2 experienced a total increase of 1,875 crimes from 2020 to 2021. Similar to Ward 1, property theft is the most frequent crime while property theft from an automobile saw the largest increase. Both burglary and arson decreased from 2020 to 2021. 
+
+Ward 3 experienced a total increase of only 201 crimes from 2020 to 2021. Burglary and motor vehicle theft decreased by 41 and 44, respectively, but property theft increased by 229. Violent homicide also decreased by 1. 
+
+Ward 4 
 
 	__By time of day - Jiaxi__
 	
