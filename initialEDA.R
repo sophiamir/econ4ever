@@ -247,10 +247,13 @@ cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent)
 wardcrime21$totalviolent <- wardcrime21$`violent|assault w/dangerous weapon`+wardcrime21$`violent|homicide`+wardcrime21$`violent|robbery`+wardcrime21$`violent|sex abuse`
 wardcrime20$totalviolent <- wardcrime20$`violent|assault w/dangerous weapon`+wardcrime20$`violent|homicide`+wardcrime20$`violent|robbery`+wardcrime20$`violent|sex abuse`
 
-# cor test
-cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent)
-cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent)
+# cor test with Pearson
+cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent,method=pearson)
+cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent,method=pearson)
 
+# cor test with Spearman
+cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent,method=spearman)
+cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent,method=spearman)
 
 #Is the method of the crime (gun, knife, others) dependent on the offense type?
 chisq.test(crime$METHOD,crime$offensegroup)
