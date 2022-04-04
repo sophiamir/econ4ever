@@ -43,10 +43,7 @@ __Theoretical Framework and Data Source- Sophia__ \
 __Data Description - Jiaxi__ \
 	__Types of variables and summary__ \
 
-Our dataset covers the crime data from January 2020 to February 2022, with 50,765 observations in total. There are 29 variables in the dataset, 9 of which are used in our project. We removed unuseful data to make sure that our dataset is clean enough. Most of the variables we used are categorical, including offense group, offense type, method, shift, report date, year, and ward. The offense group is used for categorizing offenses into two groups - property or violent crimes. The offense type is subcategories of crimes, including theft/other, theft f/auto, sex abuse, robbery, motor vehicle theft, homicide, burglary, assault w/dangerous weapon, and arson. The method includes three values, which are gun, knife, and other. The shift is a time identifier, which divides the whole day into three parts - day (8 AM to 4 PM), evening (4 PM to 12 AM), and midnight (12 AM to 8 AM). This variable can be different because of seasons. The report date is the time and day the crime was reported to the police department. Similarly, the year is the year the crime was reported. The ward is a location identifier to indicate the specific area the crime happened. There are 2 more variables in our dataset, which are offense text and offense key. These 2 variables are the same with offense type. 
-In 2020, there were 22426 crimes happening in the DC area. In 2021, the total number became 28339, there was an increase of 2840 in total. A possible reason can be lockdown because of Covid-19 in 2020. From the total number, we can see that arson was the lowest frequent crime, while theft was the highest frequent crime in both years. 70.5% increase will be caused by the increase in theft crime.\
 
-	
 __Summary Statistics  - Rebecca__ \
 
 __Introduction - Sophia__
@@ -58,6 +55,16 @@ __Theoretical Framework and Data Source- Sophia__
 __Data Description - Jiaxi__
 	__Types of variables and summary__
 	
+```{r,results='markup'}
+summary1 <- summary(modified_crime)
+(summary1)
+library(vtable)
+table1 <- sumtable(modified_crime)
+```
+
+Our dataset covers the crime data from January 2020 to February 2022, with 50,765 observations in total. There are 29 variables in the dataset, 9 of which are used in our project. We removed unuseful data to make sure that our dataset is clean enough. Most of the variables we used are categorical, including offense group, offense type, method, shift, report date, year, and ward. The offense group is used for categorizing offenses into two groups - property or violent crimes. The offense type is subcategories of crimes, including theft/other, theft f/auto, sex abuse, robbery, motor vehicle theft, homicide, burglary, assault w/dangerous weapon, and arson. The method includes three values, which are gun, knife, and other. The shift is a time identifier, which divides the whole day into three parts - day (8 AM to 4 PM), evening (4 PM to 12 AM), and midnight (12 AM to 8 AM). This variable can be different because of seasons. The report date is the time and day the crime was reported to the police department. Similarly, the year is the year the crime was reported. The ward is a location identifier to indicate the specific area the crime happened. There are 2 more variables in our dataset, which are offense text and offense key. These 2 variables are the same with offense type.  \
+
+In 2020, there were 22426 crimes happening in the DC area. In 2021, the total number became 28339, there was an increase of 2840 in total. A possible reason can be lockdown because of Covid-19 in 2020. From the total number, we can see that arson was the lowest frequent crime, while theft was the highest frequent crime in both years. 70.5% increase will be caused by the increase in theft crime. \ 
 	
 __Summary Statistics  - Rebecca__
 
@@ -144,9 +151,31 @@ Ward 7 experienced an increase of only 129 crimes from 2020 to 2021. Property th
 Ward 8 experienced an increase of 456 crimes from 2020 to 2021. Property theft was the most frequent crime and also saw the largest increase in incidences in this area. 
 
 __By time of day - Jiaxi__ \
-	
+```{r,results='markup'}
+two_way1 = table(modified_crime$SHIFT,modified_crime$OFFENSE)
+two_way1
+prop.table(two_way1,1)#row percentages
+```
+
+From the data, we can conclude that no matter what time of the day it is, theft is the highest frequent crime while arson is the lowest frequent crime. In terms of the specific distribution of each ward, there are some details that need to be noticed. \
+
 __Correlation coefficient - Jiaxi__ \
-	
+
+```{r,results='markup'}
+# cor test with Pearson
+cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent,method="pearson")
+cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent,method="pearson")
+
+# cor test with Spearman
+cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent,method="spearman")
+cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent,method="spearman")
+```
+
+First of all, we want to know if there is a relationship between time of day and types of crime. Therefore, we ran a Pearson’s correlation test. The null hypothesis is there is no correlation between types of crime and ward. The alternative hypothesis is there is a correlation between ward and types of crime. According to the little P-value less than 2.2e-16, we reject the null hypothesis at a 99% level of significance. \
+
+Therefore, we get the conclusion that there is a relationship between these two variables. In order to make our result more accurately, we ran Spearman’s correlation test and got the same result. When we ran the correlation test, we need to give values of all categories of categorical variables. Similarly, we made researches about the relationship between incidences of crime and ward, property and violent crimes, the method of the crime and offense type. We can get the conclusions that there is relationship between all these pairs of variables. \
+
+
 __Hypothesis testing - Sophia__ \
 	
 __What does it all mean/Discussion - everybody writes small summaries of their parts and we compile it together__ \
