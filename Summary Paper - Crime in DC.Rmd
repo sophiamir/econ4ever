@@ -93,9 +93,10 @@ __Data Description__
 Our dataset covers the crime data from January 2020 to February 2022, with 50,765 observations in total. There are 29 variables in the dataset, 9 of which are used in our project. We removed unuseful data to make sure that our dataset is clean enough. Most of the variables we used are categorical, including offense group, offense type, method, shift, report date, year, and ward. The offense group is used for categorizing offenses into two groups - property or violent crimes. The offense type is subcategories of crimes, including theft/other, theft f/auto, sex abuse, robbery, motor vehicle theft, homicide, burglary, assault w/dangerous weapon, and arson. The method includes three values, which are gun, knife, and other. The shift is a time identifier, which divides the whole day into three parts - day (8 AM to 4 PM), evening (4 PM to 12 AM), and midnight (12 AM to 8 AM). This variable can be different because of seasons. The report date is the time and day the crime was reported to the police department. Similarly, the year is the year the crime was reported. The ward is a location identifier to indicate the specific area the crime happened. Washington DC is divided up into eight wards. There are 2 more variables in our dataset, which are offense text and offense key. These 2 variables are the same with offense type. \
 
 In 2020, there were 22426 crimes happening in the DC area. In 2021, the total number became 28339, there was an increase of 2840 in total. A possible reason can be lockdown because of Covid-19 in 2020. From the total number, we can see that arson was the lowest frequent crime, while theft was the highest frequent crime in both years. 70.5% increase will be caused by the increase in theft crime. \ 
+
+\
 	
-	
-__Summary Statistics__
+__Summary Statistics__ \
 
 ```{r,results='markup'}
 summary1 <- summary(crimedata1)
@@ -490,6 +491,10 @@ corrplot(wardcrime21cor, method = "number", cl.ratio = 0.2, number.cex = 0.45, n
 First of all, we want to know if there is a relationship between time of day and types of crime. Therefore, we ran a Spearman’s correlation test and plotted it using the corrplot function which you can see above. Across the two years of 2020 and 2021, we see many values which are highly correlated. We see that for the year 2020 the geographical area had a strong correlation for different types of crimes i.e. motor vehicle theft, assault, homicide, robbery and sex abuse. This tells us that in 2020 some areas in DC were more prone to certain types of criminal activity than others. For the year 2021 there are fewer crimes as highly correlated  with geographical area, but there's still a pattern there. For 2021, the crimes highly correlated with certain areas of DC were sex abuse, robbery, homicide, and assault. We would like to refrain from making value judgments in this paper and at this time which is why we haven't specifically pointed which wards are highly correlated with which crimes. \
 
 When we look at the correlation between the different types of crimes under the property and violent categories another pattern emerges. We can see that despite the broader category of the crimes, there is a strong correlation in both 2020 and 2021 between different subcategories of criminal activity. A likely explanation for this is that there are external forces driving the rates of crime up or down unanimously. We discussed the theorized relationship between unemployment and crime rates in the literature review above. The economic theory lends credence to this idea. \
+
+__Relationship Between Method and Crime__ \
+
+We ran a $\chi^2$ test to determine if there was a relationship between the type of weapon (gun, knife, or other) used in a crime and the type of crime committed. Our null hypothesis for the test was that there is no association between the type of weapon and the type of crime. Our alternative hypothesis was that there is an association between the type of weapon and the criminal offense. Running the test gave us a very small p-value, as you can see below, leading us to reject the null hypothesis and adopt the alternative hypothesis. We do take these findings with a grain of salt as the $\chi^2$ test tends to give a large $\chi^2$ value and a low p-value as the total number of observations increases. 
 
 ```{r, results='markup'}
 chisq.test(crimedata1$METHOD,crimedata1$OFFENSE)
