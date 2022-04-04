@@ -26,6 +26,7 @@ library(tidyverse)
 library(lubridate)
 library(data.table)
 library(vtable)
+library(corrplot)
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
 options(scientific=T, digits = 3) 
@@ -72,38 +73,6 @@ For our SMART (Specific – Measurable – Attainable – Relevant – Time-orie
 
 •	Is there a relationship between the weapon used and the type of crime committed? \
 
-
-__Data Description - Jiaxi__ \
-	__Types of variables and summary__ \
-
-
-__Summary Statistics  - Rebecca__ \
-
-
-
-
-__Data Description - Jiaxi__
-	__Types of variables and summary__
-	
-```{r,results='markup'}
-summary1 <- summary(modified_crime)
-(summary1)
-library(vtable)
-table1 <- sumtable(modified_crime)
-```
-
-Our dataset covers the crime data from January 2020 to February 2022, with 50,765 observations in total. There are 29 variables in the dataset, 9 of which are used in our project. We removed unuseful data to make sure that our dataset is clean enough. Most of the variables we used are categorical, including offense group, offense type, method, shift, report date, year, and ward. The offense group is used for categorizing offenses into two groups - property or violent crimes. The offense type is subcategories of crimes, including theft/other, theft f/auto, sex abuse, robbery, motor vehicle theft, homicide, burglary, assault w/dangerous weapon, and arson. The method includes three values, which are gun, knife, and other. The shift is a time identifier, which divides the whole day into three parts - day (8 AM to 4 PM), evening (4 PM to 12 AM), and midnight (12 AM to 8 AM). This variable can be different because of seasons. The report date is the time and day the crime was reported to the police department. Similarly, the year is the year the crime was reported. The ward is a location identifier to indicate the specific area the crime happened. There are 2 more variables in our dataset, which are offense text and offense key. These 2 variables are the same with offense type.  \
-
-In 2020, there were 22426 crimes happening in the DC area. In 2021, the total number became 28339, there was an increase of 2840 in total. A possible reason can be lockdown because of Covid-19 in 2020. From the total number, we can see that arson was the lowest frequent crime, while theft was the highest frequent crime in both years. 70.5% increase will be caused by the increase in theft crime. \ 
-	
-__Summary Statistics  - Rebecca__
-
-
-It is clear that total crime incidences were lower in 2020 than in 2021 for every type of crime besides arson and burglary. The beginning of the COVID-19 pandemic restrictions took place during this time, and we suspect that this is a factor as to why crime rates are lower in 2020. Activities and events were cancelled and people were isolating at home which may have caused less crime activity. Overall, total crime increased by 2,840 incidents. \
-
-__By ward and year- Rebecca__ \
-
-Then, in order to examine the data in each of the different locations and compare them to one another, we found the summary statistics. 
 ```{r, results='markup'}
 #import dataset to environment 
 crimedata <- read.csv("data/dc-crimes-search-results.csv")
@@ -115,9 +84,34 @@ crimedata1 <- crimedata[, c(2,6,9,10,11,12,23,26,27)]
 crimedata1[crimedata1 == "" | crimedata1 == " "] <- NA
 
 #converting REPORT_DAT from character to date format 
-crimedata1$REPORT_DAT <- as.Date(crimedata1$REPORT_DAT, "%m/%d/%Y")
+#crimedata1$REPORT_DAT <- as.Date(crimedata1$REPORT_DAT, "%m/%d/%Y")
 
-xkablesummary(crimedata1)
+```
+
+__Data Description__
+__Types of variables and summary__
+	
+```{r,results='markup'}
+summary1 <- summary(crimedata1)
+(summary1)
+library(vtable)
+table1 <- sumtable(crimedata1)
+```
+
+Our dataset covers the crime data from January 2020 to February 2022, with 50,765 observations in total. There are 29 variables in the dataset, 9 of which are used in our project. We removed unuseful data to make sure that our dataset is clean enough. Most of the variables we used are categorical, including offense group, offense type, method, shift, report date, year, and ward. The offense group is used for categorizing offenses into two groups - property or violent crimes. The offense type is subcategories of crimes, including theft/other, theft f/auto, sex abuse, robbery, motor vehicle theft, homicide, burglary, assault w/dangerous weapon, and arson. The method includes three values, which are gun, knife, and other. The shift is a time identifier, which divides the whole day into three parts - day (8 AM to 4 PM), evening (4 PM to 12 AM), and midnight (12 AM to 8 AM). This variable can be different because of seasons. The report date is the time and day the crime was reported to the police department. Similarly, the year is the year the crime was reported. The ward is a location identifier to indicate the specific area the crime happened. There are 2 more variables in our dataset, which are offense text and offense key. These 2 variables are the same with offense type.  \
+
+In 2020, there were 22426 crimes happening in the DC area. In 2021, the total number became 28339, there was an increase of 2840 in total. A possible reason can be lockdown because of Covid-19 in 2020. From the total number, we can see that arson was the lowest frequent crime, while theft was the highest frequent crime in both years. 70.5% increase will be caused by the increase in theft crime. \ 
+	
+__Summary Statistics__
+
+It is clear that total crime incidences were lower in 2020 than in 2021 for every type of crime besides arson and burglary. The beginning of the COVID-19 pandemic restrictions took place during this time, and we suspect that this is a factor as to why crime rates are lower in 2020. Activities and events were cancelled and people were isolating at home which may have caused less crime activity. Overall, total crime increased by 2,840 incidents. \
+
+__By Ward and Year__ \
+
+Then, in order to examine the data in each of the different locations and compare them to one another, we found the summary statistics. 
+```{r, results='markup'}
+
+xkablesummary(crimedata1, title = "Summary Statistics for all Observations")
 ```
 
 We then aggregated crime statistics by type of offense and year. 
@@ -126,9 +120,17 @@ crimedata20 <- subset(crimedata1[crimedata1$YEAR == 2020, ])
 crimedata21 <- subset(crimedata1[crimedata1$YEAR == 2021, ])
 crimedata22 <- subset(crimedata1[crimedata1$YEAR == 2022, ])
 
-table(crimedata20$offensekey)
-table(crimedata21$offensekey)
-table(crimedata22$offensekey)
+table(crimedata20$offensekey) -> table20
+xkabledply(table20, title = "Summary Statistics for Criminal Activity in the Year 2020")
+
+
+table(crimedata21$offensekey) -> table21
+table(crimedata22$offensekey) -> table22
+
+xkabledply(table21, title = "Summary Statistics for Criminal Activity in the Year 2021")
+
+xkabledply(table22, title = "Summary Statistics for Criminal Activity from JAN22 - FEB22")
+
 ```
 Total incidences of crime in DC increased by 5,913 incidences from 2020 to 2021 but are projected to decrease by 3,073 incidences by the end of 2022.
 
@@ -144,22 +146,30 @@ ward7 <- subset(crimedata1[crimedata1$WARD == 7,])
 ward8 <- subset(crimedata1[crimedata1$WARD == 8,])
 
 summary1 <- summary(crimedata1)
-summary1
+xkabledply(summary1)
 table1 <- sumtable(crimedata1)
+table1
 ```
 Ward 3 has the lowest totals for all types of offenses, while the second and third highest totals are more spread out by location. Ward 2 has the highest total incidences in DC.  
 
 ```{r,results='markup'}
 #creating summary tables of the offense data by ward
 
-table(ward1$offensekey)
-table(ward2$offensekey)
-table(ward3$offensekey)
-table(ward4$offensekey)
-table(ward5$offensekey)
-table(ward6$offensekey)
-table(ward7$offensekey)
-table(ward8$offensekey)
+xkabledply(table(ward1$offensekey))
+
+xkabledply(table(ward2$offensekey))
+           
+xkabledply(table(ward3$offensekey))
+           
+xkabledply(table(ward4$offensekey))
+           
+xkabledply(table(ward5$offensekey))
+           
+xkabledply(table(ward6$offensekey))
+           
+xkabledply(table(ward7$offensekey))
+           
+xkabledply(table(ward8$offensekey))
 ```
 
 Across each type of crime, Ward 3 had the lowest amount of incidences. Ward 2 has the highest total amount of crime with Ward 2 following. \
@@ -182,7 +192,7 @@ Ward 8 experienced an increase of 456 crimes from 2020 to 2021. Property theft w
 
 __By time of day - Jiaxi__ \
 ```{r,results='markup'}
-two_way1 = table(modified_crime$SHIFT,modified_crime$OFFENSE)
+two_way1 = table(crimedata1$SHIFT,crimedata1$OFFENSE)
 two_way1
 prop.table(two_way1,1)#row percentages
 ```
@@ -191,24 +201,155 @@ From the data, we can conclude that no matter what time of the day it is, theft 
 
 __Correlation coefficient - Jiaxi__ \
 
+```{r}
 
-```{r,results='markup'}
+ward120 <- subset(ward1[ward1$YEAR == 2020, ])
+ward121 <- subset(ward1[ward1$YEAR == 2021, ])
+
+ward220 <- subset(ward2[ward2$YEAR == 2020, ])
+ward221 <- subset(ward2[ward2$YEAR == 2021, ])
+
+ward320 <- subset(ward3[ward3$YEAR == 2020, ])
+ward321 <- subset(ward3[ward3$YEAR == 2021, ])
+
+ward420 <- subset(ward4[ward4$YEAR == 2020, ])
+ward421 <- subset(ward4[ward4$YEAR == 2021, ])
+
+ward520 <- subset(ward5[ward5$YEAR == 2020, ])
+ward521 <- subset(ward5[ward5$YEAR == 2021, ])
+
+ward620 <- subset(ward6[ward6$YEAR == 2020, ])
+ward621 <- subset(ward6[ward6$YEAR == 2021, ])
+
+ward720 <- subset(ward7[ward7$YEAR == 2020, ])
+ward721 <- subset(ward7[ward7$YEAR == 2021, ])
+
+ward820 <- subset(ward8[ward8$YEAR == 2020, ])
+ward821 <- subset(ward8[ward8$YEAR == 2021, ])
+
+table821 <- as.data.frame(table(ward821$offensekey))
+crimetable21 <- as.data.frame(pivot_wider(table821, names_from = "Var1", values_from =  "Freq"))
+crimetable21$Ward <- 8
+
+table721 <- as.data.frame(table(ward721$offensekey))
+table7211 <- as.data.frame(pivot_wider(table721, names_from = "Var1", values_from =  "Freq"))
+table7211$Ward <- 7
+
+table621 <- as.data.frame(table(ward621$offensekey))
+table6211 <- as.data.frame(pivot_wider(table621, names_from = "Var1", values_from =  "Freq"))
+table6211$Ward <- 6
+table6211$`property|arson` <- 0
+
+table521 <- as.data.frame(table(ward521$offensekey))
+table5211 <- as.data.frame(pivot_wider(table521, names_from = "Var1", values_from =  "Freq"))
+table5211$Ward <- 5
+table5211$`property|arson` <- 0
+
+table421 <- as.data.frame(table(ward421$offensekey))
+table4211 <- as.data.frame(pivot_wider(table421, names_from = "Var1", values_from =  "Freq"))
+table4211$Ward <- 4
+table4211$`property|arson` <- 0
+
+table321 <- as.data.frame(table(ward321$offensekey))
+table3211 <- as.data.frame(pivot_wider(table321, names_from = "Var1", values_from =  "Freq"))
+table3211$Ward <- 3
+table3211$`property|arson` <- 0
+
+table221 <- as.data.frame(table(ward221$offensekey))
+table2211 <- as.data.frame(pivot_wider(table221, names_from = "Var1", values_from =  "Freq"))
+table2211$Ward <- 2
+
+table121 <- as.data.frame(table(ward121$offensekey))
+table1211 <- as.data.frame(pivot_wider(table121, names_from = "Var1", values_from =  "Freq"))
+table1211$Ward <- 1
+
+wardcrime21 <- rbind(crimetable21, table1211, table2211, table3211, table4211, table5211, table6211, table7211)
+
+write_csv(wardcrime21, "wardcrime21.csv")
+
+#repeating the process for the year 2020
+
+table820 <- as.data.frame(table(ward820$offensekey))
+table8200 <- as.data.frame(pivot_wider(table820, names_from = "Var1", values_from =  "Freq"))
+table8200$Ward <- 8
+table8200$`property|arson` <- 0
+
+table720 <- as.data.frame(table(ward720$offensekey))
+table7200 <- as.data.frame(pivot_wider(table720, names_from = "Var1", values_from =  "Freq"))
+table7200$Ward <- 7
+
+table620 <- as.data.frame(table(ward620$offensekey))
+table6200 <- as.data.frame(pivot_wider(table620, names_from = "Var1", values_from =  "Freq"))
+table6200$Ward <- 6
+
+table520 <- as.data.frame(table(ward520$offensekey))
+table5200 <- as.data.frame(pivot_wider(table520, names_from = "Var1", values_from =  "Freq"))
+table5200$Ward <- 5
+
+table420 <- as.data.frame(table(ward420$offensekey))
+table4200 <- as.data.frame(pivot_wider(table420, names_from = "Var1", values_from =  "Freq"))
+table4200$Ward <- 4
+table4200$`property|arson` <- 0
+
+table320 <- as.data.frame(table(ward320$offensekey))
+table3200 <- as.data.frame(pivot_wider(table320, names_from = "Var1", values_from =  "Freq"))
+table3200$Ward <- 3
+table3200$`property|arson` <- 0
+
+table220 <- as.data.frame(table(ward220$offensekey))
+table2200 <- as.data.frame(pivot_wider(table220, names_from = "Var1", values_from =  "Freq"))
+table2200$Ward <- 2
+
+table120 <- as.data.frame(table(ward120$offensekey))
+table1200 <- as.data.frame(pivot_wider(table120, names_from = "Var1", values_from =  "Freq"))
+table1200$Ward <- 1
+table1200$`property|arson` <- 0
+
+wardcrime20 <- rbind(table1200, table2200, table3200, table4200, table5200, table6200, table7200, table8200)
+
+write_csv(wardcrime20, "wardcrime20.csv")
+
+#by = c("Ward", "property|arson", "property|burglary", "property|motor vehicle theft", #"property|theft f/auto", "property|theft/other", "violent|assault w/dangerous weapon", #"violent|homicide", "violent|robbery", "violent|sex abuse")
+
+
+```
+Below you will find the correlation plot between the different types of crimes committed in  the year 2020.
+
+```{r, results='markup'}
 
 #spearman test of ward and OFFENSE
-crimedata1$numberoffense <- as.numeric(factor(crimedata1$OFFENSE))-1
-spearmancor1 <- cor.test(crimedata1$WARD,crimedata1$numberoffense,method = "spearman")
+
+#crimedata1$numberoffense <- NA
+
+#crimedata1$numberoffense <- crimedata1$OFFENSE
+
+#crimedata1$numberoffense <- as.numeric(factor(crimedata1$numberoffense))
+
+#spearmancor1 <- cor.test(crimedata1$WARD,crimedata1$numberoffense,method = "spearman")
+
+
+wardcrime20cor <- cor(wardcrime20, method = "spearman")
+wardcrime21cor <- cor(wardcrime21, method = "spearman")
+
+corrplot(wardcrime20cor)
+```
+
+Below you will find the correlation plot between the different types of crimes committed in  the year 2021.
+
+```{r, results='markup'}
+corrplot(wardcrime21cor)
 
 # cor test with Pearson
-wardcrime21$numberproperty <- as.numeric(factor(wardcrime21$totalproperty))
-wardcrime20$numberproperty <- as.numeric(factor(wardcrime20$totalproperty))
-wardcrime21$numberviolent <- as.numeric(factor(wardcrime21$totalviolent))
-wardcrime20$numberviolent <- as.numeric(factor(wardcrime20$totalviolent))
-cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent,method="pearson")
-cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent,method="pearson")
+#wardcrime21$numberproperty <- as.numeric(factor(wardcrime21$totalproperty))
+#wardcrime20$numberproperty <- as.numeric(factor(wardcrime20$totalproperty))
+#wardcrime21$numberviolent <- as.numeric(factor(wardcrime21$totalviolent))
+#wardcrime20$numberviolent <- as.numeric(factor(wardcrime20$totalviolent))
+#cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent,method="pearson")
+#cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent,method="pearson")
 
 # cor test with Spearman
-cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent,method="spearman")
-cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent,method="spearman")
+#cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent,method="spearman")
+#cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent,method="spearman")
 ```
 
 First of all, we want to know if there is a relationship between time of day and types of crime. Therefore, we ran a Pearson’s correlation test. The null hypothesis is there is no correlation between types of crime and ward. The alternative hypothesis is there is a correlation between ward and types of crime. According to the little P-value less than 2.2e-16, we reject the null hypothesis at a 99% level of significance. \
@@ -233,7 +374,6 @@ Further research on this topic should address other potentially relevant variabl
 	
 	__Correlation coefficient - Jiaxi__
 	
-	__Hypothesis testing - Sophia__
 	
 __What does it all mean/Discussion - everybody writes small summaries of their parts and we compile it together__
 
@@ -255,7 +395,7 @@ Edmark. (2005). Unemployment and Crime: Is There a Connection? The Scandinavian 
 
 Frederick, & Jozefowicz, J. J. (2018). Rural-Urban Differences in the Unemployment-Crime Relationship: The Case of Pennsylvania. Atlantic Economic Journal, 46(2), 189–201. https://doi.org/10.1007/s11293-018-9581-y
 
-  Janko, & Popli, G. (2015). Examining the link between crime and unemployment: A time-series analysis for Canada. Applied Economics, 47(37), 4007–4019. https://doi.org/10.1080/00036846.2015.1023942
+Janko, & Popli, G. (2015). Examining the link between crime and unemployment: A time-series analysis for Canada. Applied Economics, 47(37), 4007–4019. https://doi.org/10.1080/00036846.2015.1023942
 
 Lee. (2016). Unemployment and crime: The role of apprehension. European Journal of Law and Economics, 45(1), 59–80. https://doi.org/10.1007/s10657-016-9526-3
 
