@@ -1,6 +1,6 @@
 ---
 title: 'Summary Paper: Crime in DC'
-author: "Group 4: Rebecca Felix, Sophia Mir, Jiaxi Liu"
+author: "Group 4: Rebecca Felix, Jiaxi Liu, Sophia Mir"
 subtitle: 'DATS 6101 - Spring 2022'
 # date: "today"
 date: "`r Sys.Date()`"
@@ -34,10 +34,43 @@ options(scientific=T, digits = 3)
 # use scipen=999 to prevent scientific notation at all times
 ```
 
-__Introduction - Sophia__ \
+<br>
 
+__Introduction__ \
 
-__Theoretical Framework and Data Source- Sophia__ \
+As a research topic criminal activity is ripe with curious minds trying to figure out who is at fault. Particularly in the field of economics, as researchers and policymakers want to know how to curtail crime rates – is it through creating more jobs, by increasing incarceration time or fines, or through developing more community supports? As budding economists, we are curious of the same mechanism and wanted to explore the data regarding criminal activity in Washington D.C. We wanted to see what we could unearth using the tools we have learned thus far in this class. As we began looking through the research conducted on crime rates and possible causes for changes in crime rates, we saw a strong theme emerge between crime rates and unemployment based around the seminal work of economist Gary Becker. He was one of the first people who tried to wrangle why people commit crimes and if we could create policy to de-incentivize it. \
+
+Economic theory dictates that as unemployment rises, the opportunity cost of committing a crime falls leading to more incidents of crime. Burdett et al (2003) use the work of Gary Becker (1968) and others to further probe at this idea and create a model more sensitive to the heterogeneity in the labor force. They consider possible previous sentences, wage rates, and they try to predict the likelihood of turning to crime given factors such as age and labor wage rates. While they admit that geographical conditions may play a role as well, their findings show that for the most part good labor opportunities with reasonable wages do result in a lower crime rate. \
+
+Janko & Popli (2015) similarly build upon the work of Cantor and Land (1985) who created a theoretical framework to explain the relationship between unemployment and crime. The framework lies on two foundational ideas: opportunity and motivation. With the former being that as economic activity falls so do the opportunities for property crimes and the latter that as economic activity falls the incentives for committing crime increase. On testing this framework using an econometric model, Janko & Popli found that after they accounted for types of crimes and regional differences, there seemed to be no significant relationship between economic activity and crime. \
+
+Frederick & Jozefowicz (2018) created a different econometric model to test Cantor and Land’s theoretical framework in rural and urban Pennsylvania. While their findings were similar to Janko & Popli’s (2015) regarding the rural sectors of Pennsylvania, they found a positive relationship between unemployment and crime in the urban sectors. Edmark (2005) ran a fixed-effects study using panel data from Swedish countries from the years 1988-1999, a time period in which unemployment rose from 1.6% to 10.4%. Unlike the inconsistencies that Janko & Popli (2015) and Frederick & Jozefowicz (2018) found, Edmark’s model showed a positive and significant relationship between property crimes and unemployment rates in the Swedish counties studied.  \
+
+Lee (2016) examined the mixed results of previous studies and the inconsistency between theory and empirical findings and he decided to add more elements to the model – returns on crime, apprehension rates and unemployment benefits. He found that between those three variables the apprehension rate was the biggest predictor in the direction and significance of the relationship between unemployment and crime. \
+
+These are the theories and research that our exploration of the data is based on. For this initial paper we are exploring the first half of the crime-unemployment dichotomy and we will add the unemployment data at the model-building stage.
+
+__Data Source and Limitations__ \
+
+To examine the crime rates in Washington DC (DC) we used incident data gathered by the Metropolitan Police Department (MPD) which we accessed from their website. The data had information on over 50,000 recorded offenses which were reported to, and investigated by, the MPD. The dataset had incidents ranging from January 1st, 2020, through February 28th, 2022. There was a total of 29 variables made up of qualitative data in the dataset but only around five variables had complete and unique data. The dataset classified all crimes into two larger groups of property crimes and violent crimes and further into nine subcategories which we will talk about. \
+
+While it did have truly interesting data, there were a couple of limitations with using this dataset. The first one was that it is not truly representative of crime in the District of Columbia as this crime database system relies on self-report which can lead to underrepresentation of certain crimes and overrepresentation of others. Our other limitation was that because this initial dataset consisted of primarily nominal data, it was difficult to run meaningful statistical tests on it in our exploratory data analysis. As you will see below this led us to largely running chi-squared tests to test for relationships among the different variables given in the data and those we isolated from the data. \
+
+While we did aggregate the incidences by time and by geographical location, running normality tests on it would have given us meaningless results. Running non-parametric tests on the data was also impossible as once aggregated by area, time, types of crimes, there were no categories which had an equal number of observations (n) which could be compared meaningfully. We considered taking random samples of equal n from the different geographical areas (wards) to run a nonparametric comparison of means (Wilcoxon test), but it would not have told us anything of significance that we could not learn through the data summaries. \
+
+As we have already established that we did not believe this dataset to include the entirety of criminal activity occurring in the DC area, we do not assume that our data is normally distributed despite the large number of incidences recorded. As we cannot test the normality assumption, we chose to take caution and work under the assumption that our data distributions might be skewed. \
+
+__SMART Questions__ \
+
+For our SMART (Specific – Measurable – Attainable – Relevant – Time-oriented) questions we explored these ideas: \
+
+•	Is there a relationship between the time of day and the types of crimes committed? \
+
+•	Is there a relationship between the geographical area and the types of crimes committed? \
+
+•	Does a correlation exist between the two broad categories of crimes – property crimes and violent crimes? \
+
+•	Is there a relationship between the weapon used and the type of crime committed? \
 
 
 __Data Description - Jiaxi__ \
@@ -46,10 +79,7 @@ __Data Description - Jiaxi__ \
 
 __Summary Statistics  - Rebecca__ \
 
-__Introduction - Sophia__
 
-
-__Theoretical Framework and Data Source- Sophia__
 
 
 __Data Description - Jiaxi__
@@ -161,6 +191,7 @@ From the data, we can conclude that no matter what time of the day it is, theft 
 
 __Correlation coefficient - Jiaxi__ \
 
+
 ```{r,results='markup'}
 # cor test with Pearson
 cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent,method="pearson")
@@ -176,7 +207,6 @@ First of all, we want to know if there is a relationship between time of day and
 Therefore, we get the conclusion that there is a relationship between these two variables. In order to make our result more accurately, we ran Spearman’s correlation test and got the same result. When we ran the correlation test, we need to give values of all categories of categorical variables. Similarly, we made researches about the relationship between incidences of crime and ward, property and violent crimes, the method of the crime and offense type. We can get the conclusions that there is relationship between all these pairs of variables. \
 
 
-__Hypothesis testing - Sophia__ \
 	
 __What does it all mean/Discussion - everybody writes small summaries of their parts and we compile it together__ \
 
@@ -207,6 +237,18 @@ Because crime is self-reported, this database will not include incidences of cri
 __Future Research - Rebecca__ \
 
 Further research on this topic should address other potentially relevant variables that may help understand incidences of crime in DC. Variables that may be of interest and should be obtained for each ward include population, demographics, income distribution, age distribution, and unemployment levels. \
+
+__Bibliography__ \
+
+Burdett, Lagos, R., & Wright, R. (2003). Crime, Inequality, and Unemployment. The American Economic Review, 93(5), 1764–1777. https://doi.org/10.1257/000282803322655536
+
+Edmark. (2005). Unemployment and Crime: Is There a Connection? The Scandinavian Journal of Economics, 107(2), 353–373. https://doi.org/10.1111/j.1467-9442.2005.00412.x
+
+Frederick, & Jozefowicz, J. J. (2018). Rural-Urban Differences in the Unemployment-Crime Relationship: The Case of Pennsylvania. Atlantic Economic Journal, 46(2), 189–201. https://doi.org/10.1007/s11293-018-9581-y
+
+  Janko, & Popli, G. (2015). Examining the link between crime and unemployment: A time-series analysis for Canada. Applied Economics, 47(37), 4007–4019. https://doi.org/10.1080/00036846.2015.1023942
+
+Lee. (2016). Unemployment and crime: The role of apprehension. European Journal of Law and Economics, 45(1), 59–80. https://doi.org/10.1007/s10657-016-9526-3
 
 
 
