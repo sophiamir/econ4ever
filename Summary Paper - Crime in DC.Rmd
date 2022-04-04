@@ -2,8 +2,6 @@
 title: 'Summary Paper: Crime in DC'
 author: "Group 4: Rebecca Felix, Sophia Mir, Jiaxi Liu"
 subtitle: 'DATS 6101 - Spring 2022'
-=======
-author: "Rebecca Felix, GWU Intro to Data Science DATS 6101"
 # date: "today"
 date: "`r Sys.Date()`"
 output:
@@ -17,9 +15,23 @@ output:
     toc: yes
     toc_depth: '3'
 ---
+```{r init, include=FALSE}
+# some of common options (and the defaults) are: 
+# include=T, eval=T, echo=T, results='hide'/'asis'/'markup',..., collapse=F, warning=T, message=T, error=T, cache=T, fig.width=6, fig.height=4, fig.dim=c(6,4) #inches, fig.align='left'/'center','right', 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+#all libraries go here
+library(ezids)
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(data.table)
+library(vtable)
+# knitr::opts_chunk$set(warning = F, results = "markup", message = F)
+knitr::opts_chunk$set(warning = F, results = "hide", message = F)
+options(scientific=T, digits = 3) 
+# options(scipen=9, digits = 3) 
+# ‘scipen’: integer. A penalty to be applied when deciding to print numeric values in fixed or exponential notation.  Positive values bias towards fixed and negative towards scientific notation: fixed notation will be preferred unless it is more than ‘scipen’ digits wider.
+# use scipen=999 to prevent scientific notation at all times
 ```
 
 __Introduction - Sophia__ \
@@ -33,7 +45,7 @@ __Data Description - Jiaxi__ \
 	
 	
 __Summary Statistics  - Rebecca__ \
-=======
+
 __Introduction - Sophia__
 
 
@@ -49,15 +61,66 @@ __Summary Statistics  - Rebecca__
 
 It is clear that total crime incidences were lower in 2020 than in 2021 for every type of crime besides arson and burglary. The beginning of the COVID-19 pandemic restrictions took place during this time, and we suspect that this is a factor as to why crime rates are lower in 2020. Activities and events were cancelled and people were isolating at home which may have caused less crime activity. Overall, total crime increased by 2,840 incidents. \
 
-
 __By ward and year- Rebecca__ \
 
-=======
-__By ward and year- Rebecca__
+Then, in order to examine the data in each of the different locations and compare them to one another, we found the summary statistics. 
+```{r, results='markup'}
+#import dataset to environment 
+crimedata <- read.csv("data/dc-crimes-search-results.csv")
 
-Then, in order to examine the data in each of the different locations and compare them to one another, we aggregated the crime statistics by ward, type of offense, and year. \
+#removing redundant variables
+crimedata1 <- crimedata[, c(2,6,9,10,11,12,23,26,27)]
 
-(insert code here?)
+#changing the blank spaces to NAs
+crimedata1[crimedata1 == "" | crimedata1 == " "] <- NA
+
+#converting REPORT_DAT from character to date format 
+crimedata1$REPORT_DAT <- as.Date(crimedata1$REPORT_DAT, "%m/%d/%Y")
+
+xkablesummary(crimedata1)
+```
+
+We then aggregated crime statistics by type of offense and year. 
+```{r,results='markup'}
+crimedata20 <- subset(crimedata1[crimedata1$YEAR == 2020, ])
+crimedata21 <- subset(crimedata1[crimedata1$YEAR == 2021, ])
+crimedata22 <- subset(crimedata1[crimedata1$YEAR == 2022, ])
+
+table(crimedata20$offensekey)
+table(crimedata21$offensekey)
+table(crimedata22$offensekey)
+```
+Total incidences of crime in DC increased by 5,913 incidences from 2020 to 2021 but are projected to decrease by 3,073 incidences by the end of 2022.
+
+After that, we broke the data down further by each ward.
+```{r,results='markup'}
+ward1 <- subset(crimedata1[crimedata1$WARD == 1,])
+ward2 <- subset(crimedata1[crimedata1$WARD == 2,])
+ward3 <- subset(crimedata1[crimedata1$WARD == 3,])
+ward4 <- subset(crimedata1[crimedata1$WARD == 4,])
+ward5 <- subset(crimedata1[crimedata1$WARD == 5,])
+ward6 <- subset(crimedata1[crimedata1$WARD == 6,])
+ward7 <- subset(crimedata1[crimedata1$WARD == 7,])
+ward8 <- subset(crimedata1[crimedata1$WARD == 8,])
+
+summary1 <- summary(crimedata1)
+summary1
+table1 <- sumtable(crimedata1)
+```
+Ward 3 has the lowest totals for all types of offenses, while the second and third highest totals are more spread out by location. Ward 2 has the highest total incidences in DC.  
+
+```{r,results='markup'}
+#creating summary tables of the offense data by ward
+
+table(ward1$offensekey)
+table(ward2$offensekey)
+table(ward3$offensekey)
+table(ward4$offensekey)
+table(ward5$offensekey)
+table(ward6$offensekey)
+table(ward7$offensekey)
+table(ward8$offensekey)
+```
 
 Across each type of crime, Ward 3 had the lowest amount of incidences. Ward 2 has the highest total amount of crime with Ward 2 following. \
 
@@ -73,7 +136,7 @@ Ward 5 experienced a total increase of 829 crimes from 2020 to 2021. Property th
 
 Ward 6 experienced a total increase of 611 crimes from 2020 to 2021. Property theft was the most frequent crime in both years and experienced the largest increase as well. Arson and violent homicide decreased. \
 
-Ward 7 experienced an increase of only 129 crimes from 2020 to 2021. Property theft from an automobile was the most frequent crime in 2020 but saw the largest decrease, while property theft saw the largest increase and was the most frequent crime in 2021. 
+Ward 7 experienced an increase of only 129 crimes from 2020 to 2021. Property theft from an automobile was the most frequent crime in 2020 but saw the largest decrease, while property theft saw the largest increase and was the most frequent crime in 2021. \
 
 Ward 8 experienced an increase of 456 crimes from 2020 to 2021. Property theft was the most frequent crime and also saw the largest increase in incidences in this area. 
 
@@ -85,7 +148,7 @@ __Hypothesis testing - Sophia__ \
 	
 __What does it all mean/Discussion - everybody writes small summaries of their parts and we compile it together__ \
 
-In conclusion, it is clear that property theft is the most frequent crime in DC. 
+All wards saw an increase in crime from 2020 to 2021. Property theft and theft from a motor vehicle are the types of offenses that are most frequent in all locations in DC. Arson is the least committed type of crime. Overall, crime has increased significantly from 2020 to 2021. This is most likely due to the fact that people were home more frequently because of COVID-19, and then crime activity increased when restrictions were lifted in 2021. 
 
 __Disclosure on Bias- Rebecca__ \
 
@@ -104,6 +167,14 @@ Further research on this topic should address other potentially relevant variabl
 __What does it all mean/Discussion - everybody writes small summaries of their parts and we compile it together__
 
 
-__Biases and Directions for Future Research - Rebecca__
+
+__Disclosure on Bias- Rebecca__ \
+
+Because crime is self-reported, this database will not include incidences of crime that are not reported or were not humored by law enforcement. Some crimes may be more or less likely to be reported to law enforcement due to societal pressures, stigma, etc. Because of this potential for under representation, this data may inaccurately reflect the true parameters of crime in DC. \
+
+__Future Research - Rebecca__ \
+
+Further research on this topic should address other potentially relevant variables that may help understand incidences of crime in DC. Variables that may be of interest and should be obtained for each ward include population, demographics, income distribution, age distribution, and unemployment levels. \
+
 
 
