@@ -42,7 +42,10 @@ __Theoretical Framework and Data Source- Sophia__ \
 
 __Data Description - Jiaxi__ \
 	__Types of variables and summary__ \
-	
+
+Our dataset covers the crime data from January 2020 to February 2022, with 50,765 observations in total. There are 29 variables in the dataset, 9 of which are used in our project. We removed unuseful data to make sure that our dataset is clean enough. Most of the variables we used are categorical, including offense group, offense type, method, shift, report date, year, and ward. The offense group is used for categorizing offenses into two groups - property or violent crimes. The offense type is subcategories of crimes, including theft/other, theft f/auto, sex abuse, robbery, motor vehicle theft, homicide, burglary, assault w/dangerous weapon, and arson. The method includes three values, which are gun, knife, and other. The shift is a time identifier, which divides the whole day into three parts - day (8 AM to 4 PM), evening (4 PM to 12 AM), and midnight (12 AM to 8 AM). This variable can be different because of seasons. The report date is the time and day the crime was reported to the police department. Similarly, the year is the year the crime was reported. The ward is a location identifier to indicate the specific area the crime happened. There are 2 more variables in our dataset, which are offense text and offense key. These 2 variables are the same with offense type. 
+In 2020, there were 22426 crimes happening in the DC area. In 2021, the total number became 28339, there was an increase of 2840 in total. A possible reason can be lockdown because of Covid-19 in 2020. From the total number, we can see that arson was the lowest frequent crime, while theft was the highest frequent crime in both years. 70.5% increase will be caused by the increase in theft crime.\
+
 	
 __Summary Statistics  - Rebecca__ \
 
