@@ -193,7 +193,16 @@ __Correlation coefficient - Jiaxi__ \
 
 
 ```{r,results='markup'}
+
+#spearman test of ward and OFFENSE
+crimedata1$numberoffense <- as.numeric(factor(crimedata1$OFFENSE))-1
+spearmancor1 <- cor.test(crimedata1$WARD,crimedata1$numberoffense,method = "spearman")
+
 # cor test with Pearson
+wardcrime21$numberproperty <- as.numeric(factor(wardcrime21$totalproperty))
+wardcrime20$numberproperty <- as.numeric(factor(wardcrime20$totalproperty))
+wardcrime21$numberviolent <- as.numeric(factor(wardcrime21$totalviolent))
+wardcrime20$numberviolent <- as.numeric(factor(wardcrime20$totalviolent))
 cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent,method="pearson")
 cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent,method="pearson")
 
