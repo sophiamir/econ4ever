@@ -1,5 +1,5 @@
 
-#crimedata <- read.csv("data/dc-crimes-search-results.csv")
+crimedata <- read.csv("data/dc-crimes-search-results.csv")
 
 crimedata[crimedata == "" | crimedata == " "] <- NA
 
@@ -114,6 +114,10 @@ prop.table(two_way,2)#column percentages
 chisq.test(two_way)
 #Since the p value is less than 0.05, we reject the null hypothesis that ward(geographical area) is not associated with offense type.
 
+#spearman test of ward and OFFENSE
+crimedata1$numberoffense <- as.numeric(factor(crimedata1$OFFENSE))-1
+spearmancor1 <- cor.test(crimedata1$WARD,crimedata1$numberoffense,method = "spearman")
+
 #types of crimes happen during the day/evening/midnight
 two_way1 = table(modified_crime$SHIFT,modified_crime$OFFENSE)
 two_way1
@@ -134,7 +138,8 @@ setnames(offensedata, 'as.factor(crimedata1$OFFENSE)', "offense")
 
 
 #graphs of incidences for each ward
-
+install.packages("ggplot2")
+library(ggplot2)
 ward1 %>% ggplot(aes(x = as.factor(OFFENSE), fill = SHIFT)) +
   geom_histogram(binwidth = 1, stat = "count") +
   theme(plot.title = element_text(hjust = 0.5),
@@ -250,12 +255,12 @@ wardcrime21$totalviolent <- wardcrime21$`violent|assault w/dangerous weapon`+war
 wardcrime20$totalviolent <- wardcrime20$`violent|assault w/dangerous weapon`+wardcrime20$`violent|homicide`+wardcrime20$`violent|robbery`+wardcrime20$`violent|sex abuse`
 
 # cor test with Pearson
-cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent,method=c("pearson"))
-cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent,method=c("pearson"))
+cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent,method="pearson")
+cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent,method="pearson")
 
 # cor test with Spearman
-cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent,method=c("spearman"))
-cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent,method=c("spearman"))
+cor.test(wardcrime21$totalproperty,wardcrime21$totalviolent,method="spearman")
+cor.test(wardcrime20$totalproperty,wardcrime20$totalviolent,method="spearman")
 
 #Is the method of the crime (gun, knife, others) dependent on the offense type?
 chisq.test(crime$METHOD,crime$offensegroup)
