@@ -1,0 +1,15 @@
+---
+title: "Topic Proposal"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+For our final research project, Group 4 will be analyzing a dataset on abalone characteristics. Abalones are marine snails and are considered to be a delicacy in most parts of the world. Their shells also have iridescent properties which allows them to be used in jewelry and accessory making. Some of the variables in the dataset that we will be exploring are size, gender, age and weight. The SMART questions that we will be asking are:
+What physical measurement is the best predictor of the age of the abalone shell?
+Does gender affect the size of the abalone shell?
+Do males or females live longer among the abalone species?
+Which weight variable is the best predictor of the age of the abalone shell?
+The link to our dataset: https://archive.ics.uci.edu/ml/datasets/Abalone. There are 4,177 observations of 8 variables in the data. The link to our team Github repository is: https://github.com/sophiamir/econ4ever
