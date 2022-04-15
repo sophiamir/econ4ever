@@ -25,6 +25,7 @@ library(tidyverse)
 library(lubridate)
 library(data.table)
 library(vtable)
+library(corrplot)
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
 options(scientific=T, digits = 3) 
@@ -313,6 +314,9 @@ table1200$`property|arson` <- 0
 wardcrime20 <- rbind(table1200, table2200, table3200, table4200, table5200, table6200, table7200, table8200)
 
 write_csv(wardcrime20, "wardcrime20.csv")
+
+wardcrime20cor <- cor(wardcrime20, method="spearman")
+corrplot(wardcrime20cor, method = "number", cl.ratio = 0.2, number.cex = 0.45, number.digits = 1)
 
 #by = c("Ward", "property|arson", "property|burglary", "property|motor vehicle theft", #"property|theft f/auto", "property|theft/other", "violent|assault w/dangerous weapon", #"violent|homicide", "violent|robbery", "violent|sex abuse")
 

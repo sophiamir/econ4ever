@@ -98,7 +98,7 @@ library(vtable)
 table1 <- sumtable(crimedata1)
 ```
 
-Our dataset covers the crime data from January 2020 to February 2022, with 50,765 observations in total. There are 29 variables in the dataset, 9 of which are used in our project. We removed unuseful data to make sure that our dataset is clean enough. Most of the variables we used are categorical, including offense group, offense type, method, shift, report date, year, and ward. The offense group is used for categorizing offenses into two groups - property or violent crimes. The offense type is subcategories of crimes, including theft/other, theft f/auto, sex abuse, robbery, motor vehicle theft, homicide, burglary, assault w/dangerous weapon, and arson. The method includes three values, which are gun, knife, and other. The shift is a time identifier, which divides the whole day into three parts - day (8 AM to 4 PM), evening (4 PM to 12 AM), and midnight (12 AM to 8 AM). This variable can be different because of seasons. The report date is the time and day the crime was reported to the police department. Similarly, the year is the year the crime was reported. The ward is a location identifier to indicate the specific area the crime happened. There are 2 more variables in our dataset, which are offense text and offense key. These 2 variables are the same with offense type.  \
+Our dataset covers the crime data from January 2020 to February 2022, with 50,765 observations in total. There are 29 variables in the dataset, 9 of which are used in our project. We removed unuseful data to make sure that our dataset is clean enough. Most of the variables we used are categorical, including offense group, offense type, method, shift, report date, year, and ward. The offense group is used for categorizing offenses into two groups - property or violent crimes. The offense type is subcategories of crimes, including theft/other, theft f/auto, sex abuse, robbery, motor vehicle theft, homicide, burglary, assault w/dangerous weapon, and arson. The method includes three values, which are gun, knife, and other. The shift is a time identifier, which divides the whole day into three parts - day (8 AM to 4 PM), evening (4 PM to 12 AM), and midnight (12 AM to 8 AM). This variable can be different because of seasons. The report date is the time and day the crime was reported to the police department. Similarly, the year is the year the crime was reported. The ward is a location identifier to indicate the specific area the crime happened. Washington DC is divided up into eight wards. There are 2 more variables in our dataset, which are offense text and offense key. These 2 variables are the same with offense type.  \
 
 In 2020, there were 22426 crimes happening in the DC area. In 2021, the total number became 28339, there was an increase of 2840 in total. A possible reason can be lockdown because of Covid-19 in 2020. From the total number, we can see that arson was the lowest frequent crime, while theft was the highest frequent crime in both years. 70.5% increase will be caused by the increase in theft crime. \ 
 	
@@ -357,35 +357,31 @@ First of all, we want to know if there is a relationship between time of day and
 Therefore, we get the conclusion that there is a relationship between these two variables. In order to make our result more accurately, we ran Spearman’s correlation test and got the same result. When we ran the correlation test, we need to give values of all categories of categorical variables. Similarly, we made researches about the relationship between incidences of crime and ward, property and violent crimes, the method of the crime and offense type. We can get the conclusions that there is relationship between all these pairs of variables. \
 
 
-	
-__What does it all mean/Discussion - everybody writes small summaries of their parts and we compile it together__ \
+__Conclusion__ \
 
-All wards saw an increase in crime from 2020 to 2021. Property theft and theft from a motor vehicle are the types of offenses that are most frequent in all locations in DC. Arson is the least committed type of crime. Overall, crime has increased significantly from 2020 to 2021. This is most likely due to the fact that people were home more frequently because of COVID-19, and then crime activity increased when restrictions were lifted in 2021. 
+### What Did We Learn From Our SMART Questions?
 
-__Disclosure on Bias- Rebecca__ \
+From looking at the summary statistics we know that all eight wards in DC saw an increase in crime from 2020 to 2021. Property theft and theft from a motor vehicle are the types of offenses that are most frequent in all locations in DC. Arson is the least committed type of crime. Overall, crime has increased significantly from 2020 to 2021. This is most likely due to the fact that people were home more frequently because of COVID-19, and then crime activity increased when restrictions were lifted in 2021. 
 
-Because crime is self-reported, this database will not include incidences of crime that are not reported or were not humored by law enforcement. Some crimes may be more or less likely to be reported to law enforcement due to societal pressures, stigma, etc. Because of this potential for underrepresentation, this data may inaccurately reflect the true parameters of crime in DC. \
+•	Is there a relationship between the time of day and the types of crimes committed? \
+Yes! We learned that most crimes whether they are grouped under property crimes or violent crimes take place during the evening and late at night in DC.
 
-__Future Research - Rebecca__ \
+•	Is there a relationship between the geographical area and the types of crimes committed? \
+Our data shows us that there is a relationship between the different wards of DC and the types as well as frequency of crimes committed. 
 
-Further research on this topic should address other potentially relevant variables that may help understand incidences of crime in DC. Variables that may be of interest and should be obtained for each ward include population, demographics, income distribution, age distribution, and unemployment levels. \
+•	Does a correlation exist between the two broad categories of crimes – property crimes and violent crimes? \
+A correlation does exist between the two broader categories of crime which lends itself to the hypothesis that both are being driven by some other factor that we haven't taken into account yet. In the model-building part of our project, we will incorporate unemployment rates based on the economic theory talked about earlier in this paper.   
 
-	__By time of day - Jiaxi__
-	
-	__Correlation coefficient - Jiaxi__
-	
-	
-__What does it all mean/Discussion - everybody writes small summaries of their parts and we compile it together__
+•	Is there a relationship between the weapon used and the type of crime committed? \
+Yes! We did find a correlation between the method of crime and type of offense which may indicate a pattern of violence or a broader issue of gun control. 
 
-
-
-__Disclosure on Bias- Rebecca__ \
+__Disclosure on Bias__ \
 
 Because crime is self-reported, this database will not include incidences of crime that are not reported or were not humored by law enforcement. Some crimes may be more or less likely to be reported to law enforcement due to societal pressures, stigma, etc. Because of this potential for under representation, this data may inaccurately reflect the true parameters of crime in DC. \
 
-__Future Research - Rebecca__ \
+__Future Research__ \
 
-Further research on this topic should address other potentially relevant variables that may help understand incidences of crime in DC. Variables that may be of interest and should be obtained for each ward include population, demographics, income distribution, age distribution, and unemployment levels. \
+Further research on this topic and model building will incorporate the unemployment variable to see how crime and unemployment intersect in Washington DC. Other potentially relevant variables that may help understand incidences of crime in DC and may be of interest and should be obtained for each ward include population, demographics, income distribution, and age distributions. \
 
 __Bibliography__ \
 
