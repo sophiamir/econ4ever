@@ -11,4 +11,6 @@ setnames(abalone, "X7", "VisceraWeight")
 setnames(abalone, "X8", "ShellWeight")
 setnames(abalone, "X9", "Rings")
 
+abalone$Sex <- factor(abalone$Sex)
+
 write.csv(abalone, "abalone.csv")
