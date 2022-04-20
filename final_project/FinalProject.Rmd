@@ -12,3 +12,16 @@ output: html_document:
     toc: yes
     toc_depth: '3'
 ---
+
+First, we would like to run a linear regression to find the best predictor of the age of abalone shell.
+
+```{r,results='markup'}
+lm1 <- lm(Rings~Length+Diameter+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data = abalone)
+summary(lm1)
+```
+
+According to the result of the regression, we can get that the equation is as following:
+`Rings` = 2.985-1.572`Length`+13.361`Diameter`+11.826`Height`+9.247`WholeWeight`-20.214`ShuckedWeight`-9.830`VisceraWeight`+8.576`ShellWeight`
+Because we get a very small P-value and the adjusted R-squared is 0.5268, we can say that this model is statistically significant.
+Meanwhile, all of the variables except `Length` are statistically significant. 
+We can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of meat.
