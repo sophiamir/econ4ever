@@ -13,6 +13,17 @@ output: html_document:
     toc_depth: '3'
 ---
 
+```{r,results='markup'}
+#All the packages that we used
+library(ezids)
+```
+
+To begin with, we make a summary of the dataset that we have.
+
+```{r,results='markup'}
+summary(abalone)
+```
+
 First, we would like to run a linear regression to find the best predictor of the age of abalone shell.
 
 ```{r,results='markup'}
