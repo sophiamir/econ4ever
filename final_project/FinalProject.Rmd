@@ -12,3 +12,28 @@ output: html_document:
     toc: yes
     toc_depth: '3'
 ---
+```{r}
+abalone <- read.csv("abalone.csv")
+```
+
+Which weight variable is the best predictor of the age of the abalone shell? 
+
+```{r}
+lm1 <- lm(data=abalone, Rings ~ WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight)
+summary(lm1)
+
+lm2 <- lm(data=abalone, Rings ~ WholeWeight)
+summary(lm2)
+
+lm3 <- lm(data=abalone, Rings ~ ShuckedWeight)
+summary(lm3)
+
+lm4 <- lm(data=abalone, Rings ~ VisceraWeight)
+summary(lm4)
+
+lm5 <- lm(data=abalone, Rings ~ ShellWeight)
+summary(lm5)
+```
+
+
+
