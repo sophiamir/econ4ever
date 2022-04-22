@@ -136,10 +136,19 @@ The data shows that there is no gender disparity when it comes to the lifespan o
 
 ### What physical measurement is the best predictor of age in an abalone?
 
-First, we would like to run a linear regression to find the best predictor of the age of abalone shell.
+First, we would like to use `corplot` to visualize the dataset to have a better overview of that.
+```{r,results='markup'}
+#make the corplot
+abalone2 <- abalone[-c(1)]
+M <- cor(abalone2)
+corplot1 <- corrplot(M,method = "number",title = "Corrplot of physical measurement")
+corplot1
+```
+
+Then, we would like to run a linear regression to find the best predictor of the age of abalone shell.
 
 ```{r,results='markup'}
-lm1 <- lm(Rings~Length+Diameter+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data = abalone)
+lmphysical <- lm(Rings~Length+Diameter+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data = abalone)
 summary(lm1)
 ```
 
