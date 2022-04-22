@@ -1,8 +1,10 @@
 ---
 title: "Final Project - Abalone"
 author: "econ4ever"
+# date: "today"
 date: "`r Sys.Date()`"
-output: html_document:
+output: 
+  html_document:
     code_folding: hide
     number_sections: false
     toc: yes
@@ -12,6 +14,7 @@ output: html_document:
     toc: yes
     toc_depth: '3'
 ---
+
 
 library(ezids)
 library(ggplot2)
@@ -71,6 +74,164 @@ Anova.Sex_Height <- aov(Height ~ Sex, data = abalone_data)
 summary(Anova.Sex_Height)         
 tukey.Sex_Height <- TukeyHSD(Anova.Sex_Height)
 tukey.Sex_Height
+
+
+```{r}
+abalone <- read.csv("abalone.csv")
+```
+
+Which weight variable is the best predictor of the age of the abalone shell? 
+
+```{r}
+lm1 <- lm(data=abalone, Rings ~ WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight)
+summary(lm1)
+
+lm2 <- lm(data=abalone, Rings ~ WholeWeight)
+summary(lm2)
+
+lm3 <- lm(data=abalone, Rings ~ ShuckedWeight)
+summary(lm3)
+
+lm4 <- lm(data=abalone, Rings ~ VisceraWeight)
+summary(lm4)
+
+lm5 <- lm(data=abalone, Rings ~ ShellWeight)
+summary(lm5)
+```
+
+
+
+```{r init, include=FALSE}
+# some of common options (and the defaults) are: 
+# include=T, eval=T, echo=T, results='hide'/'asis'/'markup',..., collapse=F, warning=T, message=T, error=T, cache=T, fig.width=6, fig.height=4, fig.dim=c(6,4) #inches, fig.align='left'/'center','right', 
+library(ezids)
+library(tidyverse)
+library(corrplot)
+# knitr::opts_chunk$set(warning = F, results = "markup", message = F)
+knitr::opts_chunk$set(warning = F, results = "hide", message = F)
+options(scientific=T, digits = 3) 
+# options(scipen=9, digits = 3) 
+# ‘scipen’: integer. A penalty to be applied when deciding to print numeric values in fixed or exponential notation.  Positive values bias towards fixed and negative towards scientific notation: fixed notation will be preferred unless it is more than ‘scipen’ digits wider.
+# use scipen=999 to prevent scientific notation at all times
+```
+
+# Abalones R' Us
+
+## Introduction 
+
+For this project we will be using a data set on abalone caught at sea. The data consists of the following variables:
+
+* `Sex`: F or I or M (Female, Infant, Male)
+* `Length`: Longest shell measurement, mm
+* `Diameter`: Measurement perpendicular to length, mm
+* `Height`: With meat in shell in mm
+* `Whole Weight`: Whole abalone's weight, grams
+* `Shucked Weight`: Weight of abalone's meat, grams
+* `Viscera Weight`: Weight of abalone's meat post-bleeding, grams
+* `Shell Weight`: Weight of abalone's shell after being dried, grams
+* `Rings`: Number of rings on the shell, +1.5 gives age in years
+
+We've added a tenth variable `Age` to make explanations of the data easier.
+* `Age`: Age of the abalone based on its number of rings
+
+```{r}
+
+abalone <- read.csv("abalone.csv")
+abalone$Sex <- factor(abalone$Sex)
+
+#removing an extra column of id numbers
+abalone <- abalone[, -c(1)]
+
+#adding a column for the age of the abalone
+abalone$Age <- abalone$Rings + 1.5
+
+```
+
+To begin with, we make a summary of the data.
+
+```{r, results='markup'}
+
+xkablesummary(abalone, title = "Summary Statistics for the Abalone Data:")
+
+```
+
+## SMART Questions
+
+The SMART questions that we will be asking are:
+
+* What physical measurement is the best predictor of the age of the abalone shell?  
+* Does gender affect the size of the abalone shell? 
+* Do males or females live longer among the abalone species? 
+* Which weight variable is the best predictor of the age of the abalone shell? 
+* How much of an abalone’s body weight is its blood? 
+
+### Do males or females live longer in the abalone species?
+
+There are a number of ways to check if there's a difference in the average age of the male and female abalones in our data. One way to do that is to run a hypothesis test. Before running a hypothesis test, there are a number of things we need to check for in our data. We will subset the data for males and females, check the number of observations and check for normality.
+
+```{r, results='markup'}
+
+femabalone <- abalone[abalone$Sex == "F", ]
+malabalone <- abalone[abalone$Sex == "M", ]
+infabalone <- abalone[abalone$Sex == "I", ]
+
+qqnorm(femabalone$Age, main = "Normality Plot for Age of Female Abalones")
+
+qqnorm(malabalone$Age, main = "Normality Plot for Age of Male Abalones")
+
+#shapiro.test(femabalone$Age)
+#shapiro.test(malabalone$Age)
+
+```
+
+The normality plots show that the age distribution of both male and female abalones are close to being normally distributed. Running the Shapiro-Wilkes test on both shows that neither is normally distributed. As the number of females and number of males in the data are not even, we cannot run a comparison of means using hypothesis testing. Plotting the data graphically using a boxplot shows that the average age does not differ between male and female abalones. It also shows that the oldest abalone in our sample is female, while the youngest adult abalone is male.
+
+
+```{r, results='markup'}
+
+abalone %>% ggplot(aes(x = Sex, y = Age, fill = Sex)) +
+                     geom_boxplot() +
+                     theme(plot.title = element_text(hjust = 0.5),
+                           panel.background = element_blank(),
+                           panel.border = element_rect(fill = NA),
+                           panel.grid.major.y = element_line(color = "light grey"),
+                           panel.grid.minor.y = element_line(color = "light grey"),
+                           panel.grid.major.x = element_blank()) +
+  scale_y_continuous(breaks = c(seq(0,35, by=2.5),9999)) +
+  labs(x = "Sex of the Abalone", y = "Age in Years", title = "Age vs Sex in Abalones")
+
+```
+
+```{r}
+
+sexchi <- chisq.test(abalone$Sex, abalone$Age)
+#sexchi
+
+```
+Running a chi-squared test on the variables `Sex` and `Age` shows that there is a statistically significant association between `Age` and `Sex`. However, if we look back at the graph above, it becomes obvious that the class `I` (infant) in the variable `Sex` may be driving the association, as male and female abalones ages seem to be evenly distributed. 
+
+The data shows that there is no gender disparity when it comes to the lifespan of the abalone in our sample. There may be a prime harvesting age for abalones past which they are no longer considered a delicacy which may be creating an upper limit in our data set. 
+
+
+### What physical measurement is the best predictor of age in an abalone?
+
+First, we would like to run a linear regression to find the best predictor of the age of abalone shell.
+
+```{r,results='markup'}
+lm1 <- lm(Rings~Length+Diameter+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data = abalone)
+summary(lm1)
+```
+
+According to the result of the regression, we can get that the equation is as following:
+`Rings` = 2.985-1.572`Length`+13.361`Diameter`+11.826`Height`+9.247`WholeWeight`-20.214`ShuckedWeight`-9.830`VisceraWeight`+8.576`ShellWeight`
+Because we get a very small P-value and the adjusted R-squared is 0.5268, we can say that this model is statistically significant.
+Meanwhile, all of the variables except `Length` are statistically significant. 
+We can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of meat.
+
+## Model Building
+
+
+## Conclusion
 
 
 
