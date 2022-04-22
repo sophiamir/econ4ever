@@ -51,7 +51,7 @@ abalone$Age <- abalone$Rings + 1.5
 
 The dataset contains `r nrow(abalone)` instances with `r length(colnames(abalone))-1` explanatory and 1 dependent variable - *Rings* all of which are numerical, except for the sex variable which is essentially a factor variable. Also, the dataset does not appear to contain any missing field which appeared to be a good fit for the analyses. The observations in the data set represent different individual abalone shells and their respective physical attributes. 
 
-For this project we will be using a data set on abalone caught at sea. The data consists of the following variables:
+For this project, we will be using a data set on abalone caught at sea. The data consists of the following variables:
 
 * `Sex`: F or I or M (Female, Infant, Male)
 * `Length`: Longest shell measurement, mm
@@ -71,9 +71,7 @@ We've added a tenth variable `Age` to make explanations of the data easier.
 To begin with, we make a summary of the data.
 
 ```{r, results='markup'}
-
 xkablesummary(abalone, title = "Summary Statistics for the Abalone Data:")
-
 ```
 
 ## SMART Questions
@@ -132,7 +130,6 @@ sexchi <- chisq.test(abalone$Sex, abalone$Age)
 Running a chi-squared test on the variables `Sex` and `Age` shows that there is a statistically significant association between `Age` and `Sex`. However, if we look back at the graph above, it becomes obvious that the class `I` (infant) in the variable `Sex` may be driving the association, as male and female abalones ages seem to be evenly distributed. 
 
 The data shows that there is no gender disparity when it comes to the lifespan of the abalone in our sample. There may be a prime harvesting age for abalones past which they are no longer considered a delicacy which may be creating an upper limit in our data set. 
-
 
 ### What physical measurement is the best predictor of age in an abalone?
 
@@ -248,8 +245,20 @@ lm5 <- lm(data=abalone, Rings ~ ShellWeight)
 summary(lm5)
 ```
 
+### How much of an abalone’s body weight is its blood?
+
+```{r}
+
+abalone$'Blood Percentage' <- abalone$VisceraWeight/abalone$ShuckedWeight
+
+mean(abalone$`Blood Percentage`)
+
+```
 
 ## Model Building
+
+
+
 
 
 ## Conclusion
