@@ -155,11 +155,16 @@ To evaluate this question we will first look at the boxplots for Length, Diamete
 
 ```{r, results='markup'}
 
-bp.Sex_Length <- ggplot(abalone_data, aes(x=Sex, y=Length, color=Sex, group=Sex)) +
-         geom_boxplot(outlier.shape=8, outlier.color='red') +
-         stat_boxplot(geom='errorbar', width=0.3) +
+bp.Sex_Length <- ggplot(abalone_data, aes(x=Sex, y=Length, fill=Sex, group=Sex)) +
+         geom_boxplot(outlier.shape=8, outlier.color='red') + 
+         theme(plot.title = element_text(hjust = 0.5),
+         panel.background = element_blank(),
+         panel.border = element_rect(fill = NA),
+         panel.grid.major.y = element_line(color = "light grey"),
+         panel.grid.minor.y = element_line(color = "light grey"),
+         panel.grid.major.x = element_blank()) +
          xlab('Sex') +
-         ylab('Length') +
+         ylab('Length (mm)') +
          ggtitle('Length of Abalone Shells by Sex')
 
 bp.Sex_Length
@@ -169,11 +174,16 @@ tukey.Sex_Length <- TukeyHSD(Anova.Sex_Length)
 tukey.Sex_Length
 
 
-bp.Sex_Diameter <- ggplot(abalone_data, aes(x=Sex, y=Diameter, color=Sex, group=Sex)) +
+bp.Sex_Diameter <- ggplot(abalone_data, aes(x=Sex, y=Diameter, fill=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
-         stat_boxplot(geom='errorbar', width=0.3) +
+         theme(plot.title = element_text(hjust = 0.5),
+         panel.background = element_blank(),
+         panel.border = element_rect(fill = NA),
+         panel.grid.major.y = element_line(color = "light grey"),
+         panel.grid.minor.y = element_line(color = "light grey"),
+         panel.grid.major.x = element_blank()) +
          xlab('Sex') +
-         ylab('Diameter') +
+         ylab('Diameter (mm)') +
          ggtitle('Diameter of Abalone Shells by Sex')
          
 bp.Sex_Diameter
@@ -182,11 +192,16 @@ summary(Anova.Sex_Diameter)
 tukey.Sex_Diameter <- TukeyHSD(Anova.Sex_Diameter)
 tukey.Sex_Diameter
 
-bp.Sex_Height <- ggplot(abalone_data, aes(x=Sex, y=Height, color=Sex, group=Sex)) +
+bp.Sex_Height <- ggplot(abalone_data, aes(x=Sex, y=Height, fill=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
-         stat_boxplot(geom='errorbar', width=0.3) +
+         theme(plot.title = element_text(hjust = 0.5),
+         panel.background = element_blank(),
+         panel.border = element_rect(fill = NA),
+         panel.grid.major.y = element_line(color = "light grey"),
+         panel.grid.minor.y = element_line(color = "light grey"),
+         panel.grid.major.x = element_blank()) +
          xlab('Sex') +
-         ylab('Height') +
+         ylab('Height (mm)') +
          ggtitle('Height of Abalone Shells by Sex')
          
 bp.Sex_Height         
