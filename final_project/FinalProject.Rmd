@@ -15,98 +15,13 @@ output:
     toc_depth: '3'
 ---
 
-
-library(ezids)
-library(ggplot2)
-library()
-
-getwd()
-setwd("C:/Users/danie/OneDrive/Documents/econ4ever")
-abalone_data = read.csv('abalone.csv')
-
-The dataset contains `r nrow(abalone_data)` instances with `r length(colnames(abalone_data))-1` explanatory and 1 dependent variable - *Rings* all of which are numerical, except for the sex variable which is essentially a factor variable. Also, the dataset does not appear to contain any missing field which appeared to be a good fit for the analyses. The observations in the data set represent different individual abalone shells and their respective physical attributes. A summary of the dataset is as follows:  
-
-summary_abalone <- summary(abalone_data)
-xkablesummary(abalone_data)
-hist(abalone_data$Rings)
-
-
-SMART Question II: Does gender affect the size of the abalone shell?
-
-To evaluate this question we will first look at the boxplots for Length, Diameter, and Height seperated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
-
-bp.Sex_Length <- ggplot(abalone_data, aes(x=Sex, y=Length, color=Sex, group=Sex)) +
-         geom_boxplot(outlier.shape=8, outlier.color='red') +
-         stat_boxplot(geom='errorbar', width=0.3) +
-         xlab('Sex') +
-         ylab('Length') +
-         ggtitle('Length of Abalone Shells by Sex')
-
-bp.Sex_Length
-Anova.Sex_Length <- aov(Length ~ Sex, data = abalone_data)
-summary(Anova.Sex_Length)
-tukey.Sex_Length <- TukeyHSD(Anova.Sex_Length)
-tukey.Sex_Length
-
-
-bp.Sex_Diameter <- ggplot(abalone_data, aes(x=Sex, y=Diameter, color=Sex, group=Sex)) +
-         geom_boxplot(outlier.shape=8, outlier.color='red') +
-         stat_boxplot(geom='errorbar', width=0.3) +
-         xlab('Sex') +
-         ylab('Diameter') +
-         ggtitle('Diameter of Abalone Shells by Sex')
-         
-bp.Sex_Diameter
-Anova.Sex_Diameter <- aov(Diameter ~ Sex, data = abalone_data)
-summary(Anova.Sex_Diameter)   
-tukey.Sex_Diameter <- TukeyHSD(Anova.Sex_Diameter)
-tukey.Sex_Diameter
-
-bp.Sex_Height <- ggplot(abalone_data, aes(x=Sex, y=Height, color=Sex, group=Sex)) +
-         geom_boxplot(outlier.shape=8, outlier.color='red') +
-         stat_boxplot(geom='errorbar', width=0.3) +
-         xlab('Sex') +
-         ylab('Height') +
-         ggtitle('Height of Abalone Shells by Sex')
-         
-bp.Sex_Height         
-Anova.Sex_Height <- aov(Height ~ Sex, data = abalone_data)
-summary(Anova.Sex_Height)         
-tukey.Sex_Height <- TukeyHSD(Anova.Sex_Height)
-tukey.Sex_Height
-
-
-```{r}
-abalone <- read.csv("abalone.csv")
-```
-
-Which weight variable is the best predictor of the age of the abalone shell? 
-
-```{r}
-lm1 <- lm(data=abalone, Rings ~ WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight)
-summary(lm1)
-
-lm2 <- lm(data=abalone, Rings ~ WholeWeight)
-summary(lm2)
-
-lm3 <- lm(data=abalone, Rings ~ ShuckedWeight)
-summary(lm3)
-
-lm4 <- lm(data=abalone, Rings ~ VisceraWeight)
-summary(lm4)
-
-lm5 <- lm(data=abalone, Rings ~ ShellWeight)
-summary(lm5)
-```
-
-
-
 ```{r init, include=FALSE}
 # some of common options (and the defaults) are: 
 # include=T, eval=T, echo=T, results='hide'/'asis'/'markup',..., collapse=F, warning=T, message=T, error=T, cache=T, fig.width=6, fig.height=4, fig.dim=c(6,4) #inches, fig.align='left'/'center','right', 
 library(ezids)
 library(tidyverse)
 library(corrplot)
+library(ggplot2)
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
 options(scientific=T, digits = 3) 
@@ -118,6 +33,12 @@ options(scientific=T, digits = 3)
 # Abalones R' Us
 
 ## Introduction 
+
+The dataset contains `r nrow(abalone_data)` instances with `r length(colnames(abalone_data))-1` explanatory and 1 dependent variable - *Rings* all of which are numerical, except for the sex variable which is essentially a factor variable. Also, the dataset does not appear to contain any missing field which appeared to be a good fit for the analyses. The observations in the data set represent different individual abalone shells and their respective physical attributes. A summary of the dataset is as follows:  
+
+summary_abalone <- summary(abalone_data)
+xkablesummary(abalone_data)
+hist(abalone_data$Rings)
 
 For this project we will be using a data set on abalone caught at sea. The data consists of the following variables:
 
@@ -227,6 +148,74 @@ According to the result of the regression, we can get that the equation is as fo
 Because we get a very small P-value and the adjusted R-squared is 0.5268, we can say that this model is statistically significant.
 Meanwhile, all of the variables except `Length` are statistically significant. 
 We can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of meat.
+
+### Does gender affect the size of the abalone shell?
+
+To evaluate this question we will first look at the boxplots for Length, Diameter, and Height seperated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
+
+```{r, results='markup'}
+
+bp.Sex_Length <- ggplot(abalone_data, aes(x=Sex, y=Length, color=Sex, group=Sex)) +
+         geom_boxplot(outlier.shape=8, outlier.color='red') +
+         stat_boxplot(geom='errorbar', width=0.3) +
+         xlab('Sex') +
+         ylab('Length') +
+         ggtitle('Length of Abalone Shells by Sex')
+
+bp.Sex_Length
+Anova.Sex_Length <- aov(Length ~ Sex, data = abalone_data)
+summary(Anova.Sex_Length)
+tukey.Sex_Length <- TukeyHSD(Anova.Sex_Length)
+tukey.Sex_Length
+
+
+bp.Sex_Diameter <- ggplot(abalone_data, aes(x=Sex, y=Diameter, color=Sex, group=Sex)) +
+         geom_boxplot(outlier.shape=8, outlier.color='red') +
+         stat_boxplot(geom='errorbar', width=0.3) +
+         xlab('Sex') +
+         ylab('Diameter') +
+         ggtitle('Diameter of Abalone Shells by Sex')
+         
+bp.Sex_Diameter
+Anova.Sex_Diameter <- aov(Diameter ~ Sex, data = abalone_data)
+summary(Anova.Sex_Diameter)   
+tukey.Sex_Diameter <- TukeyHSD(Anova.Sex_Diameter)
+tukey.Sex_Diameter
+
+bp.Sex_Height <- ggplot(abalone_data, aes(x=Sex, y=Height, color=Sex, group=Sex)) +
+         geom_boxplot(outlier.shape=8, outlier.color='red') +
+         stat_boxplot(geom='errorbar', width=0.3) +
+         xlab('Sex') +
+         ylab('Height') +
+         ggtitle('Height of Abalone Shells by Sex')
+         
+bp.Sex_Height         
+Anova.Sex_Height <- aov(Height ~ Sex, data = abalone_data)
+summary(Anova.Sex_Height)         
+tukey.Sex_Height <- TukeyHSD(Anova.Sex_Height)
+tukey.Sex_Height
+
+```
+
+### Which weight variable is the best predictor of the age of the abalone shell? 
+
+```{r}
+lm1 <- lm(data=abalone, Rings ~ WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight)
+summary(lm1)
+
+lm2 <- lm(data=abalone, Rings ~ WholeWeight)
+summary(lm2)
+
+lm3 <- lm(data=abalone, Rings ~ ShuckedWeight)
+summary(lm3)
+
+lm4 <- lm(data=abalone, Rings ~ VisceraWeight)
+summary(lm4)
+
+lm5 <- lm(data=abalone, Rings ~ ShellWeight)
+summary(lm5)
+```
+
 
 ## Model Building
 
