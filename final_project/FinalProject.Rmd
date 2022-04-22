@@ -22,6 +22,7 @@ library(ezids)
 library(tidyverse)
 library(corrplot)
 library(ggplot2)
+library(faraway)
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
 options(scientific=T, digits = 3) 
@@ -34,11 +35,21 @@ options(scientific=T, digits = 3)
 
 ## Introduction 
 
-The dataset contains `r nrow(abalone_data)` instances with `r length(colnames(abalone_data))-1` explanatory and 1 dependent variable - *Rings* all of which are numerical, except for the sex variable which is essentially a factor variable. Also, the dataset does not appear to contain any missing field which appeared to be a good fit for the analyses. The observations in the data set represent different individual abalone shells and their respective physical attributes. A summary of the dataset is as follows:  
+```{r}
 
-summary_abalone <- summary(abalone_data)
-xkablesummary(abalone_data)
-hist(abalone_data$Rings)
+abalone <- as.data.frame(read.csv("abalone.csv"))
+abalone$Sex <- factor(abalone$Sex)
+
+#removing an extra column of id numbers
+abalone <- abalone[, -c(1)]
+
+#adding a column for the age of the abalone
+abalone$Age <- abalone$Rings + 1.5
+
+
+```
+
+The dataset contains `r nrow(abalone)` instances with `r length(colnames(abalone))-1` explanatory and 1 dependent variable - *Rings* all of which are numerical, except for the sex variable which is essentially a factor variable. Also, the dataset does not appear to contain any missing field which appeared to be a good fit for the analyses. The observations in the data set represent different individual abalone shells and their respective physical attributes. 
 
 For this project, we will be using a data set on abalone caught at sea. The data consists of the following variables:
 
@@ -55,18 +66,7 @@ For this project, we will be using a data set on abalone caught at sea. The data
 We've added a tenth variable `Age` to make explanations of the data easier.
 * `Age`: Age of the abalone based on its number of rings
 
-```{r}
 
-abalone <- read.csv("abalone.csv")
-abalone$Sex <- factor(abalone$Sex)
-
-#removing an extra column of id numbers
-abalone <- abalone[, -c(1)]
-
-#adding a column for the age of the abalone
-abalone$Age <- abalone$Rings + 1.5
-
-```
 
 To begin with, we make a summary of the data.
 
@@ -133,11 +133,43 @@ The data shows that there is no gender disparity when it comes to the lifespan o
 
 ### What physical measurement is the best predictor of age in an abalone?
 
-First, we would like to run a linear regression to find the best predictor of the age of abalone shell.
+First, we would like to use `corplot` to visualize the dataset to have a better overview of that.
+```{r,results='markup'}
+#make the corplot
+abalone2 <- abalone[-c(1)]
+M <- cor(abalone2)
+corplot1 <- corrplot(M,method = "number",title = "Corrplot of physical measurement")
+corplot1
+```
+
+Then, we would like to run a linear regression to find the best predictor of the age of abalone shell.
 
 ```{r,results='markup'}
-lm1 <- lm(Rings~Length+Diameter+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data = abalone)
+lmphysical <- lm(Rings~Length+Diameter+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data = abalone)
 summary(lm1)
+
+#we ran a bunch of regressions and checked the R-squared values and VIF values for each one to find the best linear regression model
+#the regressions were basically running each variable on the rest (except for Age since Age and Rings are perfectly collinear) to see which ones had VIF values under 10 and were statistically significant
+#we're left with the model Length~Age+Diameter+Height+WholeWeight+Sex in which Height is not statistically significant and taking it out doesn't affect the model much and doesn't change the R-squared value but we'll take it out during the analysis
+
+#lm2 <- lm(Age~Length+Diameter+Height+WholeWeight+Sex, data=abalone)
+
+lm3 <- lm(Length~Age+Diameter+Height+WholeWeight+Sex, data=abalone)
+
+#lm4 <- lm(Diameter~Rings+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data=abalone)
+
+#lm5 <- lm(Height~Rings+Diameter+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data=abalone)
+
+#lm6 <- lm(WholeWeight~Rings+Diameter+Height, data=abalone)
+
+summary(lm2)
+summary(lm3)
+summary(lm4)
+summary(lm5)
+summary(lm6)
+
+vif(lm3)
+
 ```
 
 According to the result of the regression, we can get that the equation is as following:
@@ -152,7 +184,7 @@ To evaluate this question we will first look at the boxplots for Length, Diamete
 
 ```{r, results='markup'}
 
-bp.Sex_Length <- ggplot(abalone_data, aes(x=Sex, y=Length, color=Sex, group=Sex)) +
+bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, color=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          stat_boxplot(geom='errorbar', width=0.3) +
          xlab('Sex') +
@@ -160,13 +192,13 @@ bp.Sex_Length <- ggplot(abalone_data, aes(x=Sex, y=Length, color=Sex, group=Sex)
          ggtitle('Length of Abalone Shells by Sex')
 
 bp.Sex_Length
-Anova.Sex_Length <- aov(Length ~ Sex, data = abalone_data)
+Anova.Sex_Length <- aov(Length ~ Sex, data = abalone)
 summary(Anova.Sex_Length)
 tukey.Sex_Length <- TukeyHSD(Anova.Sex_Length)
 tukey.Sex_Length
 
 
-bp.Sex_Diameter <- ggplot(abalone_data, aes(x=Sex, y=Diameter, color=Sex, group=Sex)) +
+bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, color=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          stat_boxplot(geom='errorbar', width=0.3) +
          xlab('Sex') +
@@ -174,12 +206,12 @@ bp.Sex_Diameter <- ggplot(abalone_data, aes(x=Sex, y=Diameter, color=Sex, group=
          ggtitle('Diameter of Abalone Shells by Sex')
          
 bp.Sex_Diameter
-Anova.Sex_Diameter <- aov(Diameter ~ Sex, data = abalone_data)
+Anova.Sex_Diameter <- aov(Diameter ~ Sex, data = abalone)
 summary(Anova.Sex_Diameter)   
 tukey.Sex_Diameter <- TukeyHSD(Anova.Sex_Diameter)
 tukey.Sex_Diameter
 
-bp.Sex_Height <- ggplot(abalone_data, aes(x=Sex, y=Height, color=Sex, group=Sex)) +
+bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, color=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          stat_boxplot(geom='errorbar', width=0.3) +
          xlab('Sex') +
@@ -187,7 +219,7 @@ bp.Sex_Height <- ggplot(abalone_data, aes(x=Sex, y=Height, color=Sex, group=Sex)
          ggtitle('Height of Abalone Shells by Sex')
          
 bp.Sex_Height         
-Anova.Sex_Height <- aov(Height ~ Sex, data = abalone_data)
+Anova.Sex_Height <- aov(Height ~ Sex, data = abalone)
 summary(Anova.Sex_Height)         
 tukey.Sex_Height <- TukeyHSD(Anova.Sex_Height)
 tukey.Sex_Height
