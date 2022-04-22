@@ -1,6 +1,20 @@
 ---
-title: "Topic Proposal"
-output: html_document
+title: "Intro to DS - Final Topic Proposal"
+author: "Daniel Dodson, Rebecca Felix. Jiaxi Liu, Sophia Mir"
+date: "`r Sys.Date()`"
+output:
+  word_document:
+    toc: yes
+    toc_depth: '3'
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+  html_document:
+    code_folding: hide
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
 ---
 
 ```{r setup, include=FALSE}
