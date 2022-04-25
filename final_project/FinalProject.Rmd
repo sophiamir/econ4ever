@@ -23,6 +23,7 @@ library(tidyverse)
 library(corrplot)
 library(ggplot2)
 library(faraway)
+library(gclus)
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
 options(scientific=T, digits = 3) 
@@ -65,8 +66,6 @@ For this project, we will be using a data set on abalone caught at sea. The data
 
 We've added a tenth variable `Age` to make explanations of the data easier.
 * `Age`: Age of the abalone based on its number of rings
-
-
 
 To begin with, we make a summary of the data.
 
@@ -134,6 +133,7 @@ The data shows that there is no gender disparity when it comes to the lifespan o
 ### What physical measurement is the best predictor of age in an abalone?
 
 First, we would like to use `corplot` to visualize the dataset to have a better overview of that.
+
 ```{r,results='markup'}
 #make the corplot
 abalone2 <- abalone[-c(1)]
@@ -141,12 +141,30 @@ M <- cor(abalone2)
 corplot1 <- corrplot(M,method = "number",title = "Corrplot of physical measurement")
 corplot1
 ```
+Then, we would like to create a scatterplot matrix based on this dataset.
 
-Then, we would like to run a linear regression to find the best predictor of the age of abalone shell.
+```{r,results='markup'}
+scatterplot1 <-scatterplot(Age~Length, data = abalone,
+                           xlab = "Length", ylab = "Age", main="scatterplot of length and age")
+scatterplot2 <-scatterplot(Age~Diameter, data = abalone,
+                           xlab = "Diameter", ylab = "Age", main="scatterplot of diameter and age")
+scatterplot3 <-scatterplot(Age~Height, data = abalone,
+                           xlab = "Height", ylab = "Age", main="scatterplot of height and age")
+scatterplot4 <-scatterplot(Age~WholeWeight, data = abalone,
+                           xlab = "WholeWeight", ylab = "Age", main="scatterplot of whole weight and age")
+scatterplot5 <-scatterplot(Age~ShuckedWeight, data = abalone,
+                           xlab = "ShuckedWeight", ylab = "Age", main="scatterplot of shucked weight and age")
+scatterplot6 <-scatterplot(Age~VisceraWeight, data = abalone,
+                           xlab = "VisceraWeight", ylab = "Age", main="scatterplot of viscera weight and age")
+scatterplot7 <-scatterplot(Age~ShellWeight, data = abalone,
+                           xlab = "shell weight", ylab = "Age", main="scatterplot of shell weight and age")
+```
+
+It is very hard to tell a very clear relationship between `age` and other physical measurement. Therefore, we would like to run a linear regression to find the best predictor of the age of abalone shell.
 
 ```{r,results='markup'}
 lmphysical <- lm(Rings~Length+Diameter+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data = abalone)
-summary(lm1)
+summary(lmphysical)
 
 #we ran a bunch of regressions and checked the R-squared values and VIF values for each one to find the best linear regression model
 #the regressions were basically running each variable on the rest (except for Age since Age and Rings are perfectly collinear) to see which ones had VIF values under 10 and were statistically significant
@@ -250,6 +268,16 @@ tukey.Sex_Height <- TukeyHSD(Anova.Sex_Height)
 tukey.Sex_Height
 
 ```
+
+Now, we would like to draw a residual plot to see if the dataset satisfies the homoskedasticity or not.
+
+```{r,results='markup'}
+res <- resid(lmphysical)
+residualplot1 <- plot(fitted(lmphysical),res,
+                      xlab = "fitted value", ylab = "residuals", main = "residual plot") + 
+  abline(0,0)
+```
+
 
 ### Which weight variable is the best predictor of the age of the abalone shell? 
 
