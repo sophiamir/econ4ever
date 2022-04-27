@@ -23,6 +23,7 @@ library(tidyverse)
 library(corrplot)
 library(ggplot2)
 library(faraway)
+library(scales)
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
 options(scientific=T, digits = 3) 
@@ -146,7 +147,7 @@ Then, we would like to run a linear regression to find the best predictor of the
 
 ```{r,results='markup'}
 lmphysical <- lm(Rings~Length+Diameter+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data = abalone)
-summary(lm1)
+summary(lmphysical)
 
 #we ran a bunch of regressions and checked the R-squared values and VIF values for each one to find the best linear regression model
 #the regressions were basically running each variable on the rest (except for Age since Age and Rings are perfectly collinear) to see which ones had VIF values under 10 and were statistically significant
@@ -162,37 +163,37 @@ lm3 <- lm(Length~Age+Diameter+Height+WholeWeight+Sex, data=abalone)
 
 #lm6 <- lm(WholeWeight~Rings+Diameter+Height, data=abalone)
 
-summary(lm2)
+#summary(lm2)
 summary(lm3)
-summary(lm4)
-summary(lm5)
-summary(lm6)
+#summary(lm4)
+#summary(lm5)
+#summary(lm6)
 
 vif(lm3)
 
 ```
 
-According to the result of the regression, we can get that the equation is as following:
-`Rings` = 2.985-1.572`Length`+13.361`Diameter`+11.826`Height`+9.247`WholeWeight`-20.214`ShuckedWeight`-9.830`VisceraWeight`+8.576`ShellWeight`
+According to the result of the regression, we can get that the equation is as following: \
+`Rings` = 2.985-1.572`Length`+13.361`Diameter`+11.826`Height`+9.247`WholeWeight`-20.214`ShuckedWeight`-9.830`VisceraWeight`+8.576`ShellWeight`\
 Because we get a very small P-value and the adjusted R-squared is 0.5268, we can say that this model is statistically significant.
 Meanwhile, all of the variables except `Length` are statistically significant. 
 We can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of meat.
 
 ### Does gender affect the size of the abalone shell?
 
-To evaluate this question we will first look at the boxplots for Length, Diameter, and Height seperated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
+To evaluate this question, we will first look at boxplots for Length, Diameter, and Height seperated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
 
 ```{r, results='markup'}
 
 
-bp.Sex_Length <- ggplot(abalone_data, aes(x=Sex, y=Length, fill=Sex, group=Sex)) +
+bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, fill=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') + 
          theme(plot.title = element_text(hjust = 0.5),
          panel.background = element_blank(),
          panel.border = element_rect(fill = NA),
          panel.grid.major.y = element_line(color = "light grey"),
          panel.grid.minor.y = element_line(color = "light grey"),
-         panel.grid.major.x = element_blank()) +
+         panel.grid.major.x = element_blank()) 
 
 bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, color=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
@@ -210,7 +211,7 @@ tukey.Sex_Length
 
 
 
-bp.Sex_Diameter <- ggplot(abalone_data, aes(x=Sex, y=Diameter, fill=Sex, group=Sex)) +
+bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, fill=Sex, group=Sex))
 bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, color=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          theme(plot.title = element_text(hjust = 0.5),
@@ -230,7 +231,7 @@ tukey.Sex_Diameter <- TukeyHSD(Anova.Sex_Diameter)
 tukey.Sex_Diameter
 
 
-bp.Sex_Height <- ggplot(abalone_data, aes(x=Sex, y=Height, fill=Sex, group=Sex)) +
+bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, fill=Sex, group=Sex))
 bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, color=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          theme(plot.title = element_text(hjust = 0.5),
@@ -271,29 +272,42 @@ summary(lm5)
 ```
 
 ### How much of an abalone’s body weight is its blood?
-
 ```{r}
+abalone$'BloodPercentage' <- abalone$VisceraWeight/abalone$ShuckedWeight
+mean(abalone$`BloodPercentage`)
+```
 
-abalone$'Blood Percentage' <- abalone$VisceraWeight/abalone$ShuckedWeight
+To answer this question, we created a new  variable entitled `BloodPercentage` that is the amount of weight from viscera divided by the total weight of the meat. 
 
-mean(abalone$`Blood Percentage`)
+The mean of this variable is `r mean(abalone$BloodPercentage)`, indicating that `r mean(abalone$BloodPercentage)*100`% of the average abalone's weight is from the viscera organs.
 
+```{r, results='markup'}
+# Histogram #
+ggplot(data=abalone, aes(x=BloodPercentage)) + geom_histogram(color='red') + ggtitle("Percentage of Abalone Weight From Viscera") + xlab("% Viscera Weight") + ylab("Count") + scale_x_continuous(breaks = scales::pretty_breaks(n = 15), labels = percent_format(accuracy = 1)) + geom_vline(aes(xintercept=mean(BloodPercentage)), color='blue')
 ```
 
 ## Model Building
 
 Model Assumptions: 
 
-1. *Rings* are normally distributed. 
+1. `Rings` are normally distributed. 
 ```{r, results='markup'}
+# Q Q plot #
+qqnorm(abalone$Rings, main="Q-Q Plot of Rings in Abalone Shells")
+
+# Histogram #
 ggplot(data=abalone, aes(x=Rings)) + geom_histogram(bins=30, color='blue') + ggtitle("Distribution of Ring Count in Abalone Shells") + xlab("Number of Rings") + ylab("Count")
 ```
 
-2. Functional form: there is a linear relationship between *Rings* and the independent variables.
+2. Functional form: there is a linear relationship between `Rings` and the independent variables.
 ```{r, results='markup'}
 
-# We can choose what variables we want here to visualize correct functional form #
+# All LM plots #
+fullmodel <- lm(data=abalone, Rings~.)
+plot(fullmodel)
 
+# Scatterplot #
+# We can choose what variable we want to plot with Rings here to visualize correct functional form #
 ggplot(abalone, aes(x=Rings, y=WholeWeight)) + geom_point(color='blue') + ggtitle("Whole Weight vs. Rings") + xlab("Rings") + ylab("Whole Weight") + geom_smooth(method='lm')
 ```
 
@@ -301,7 +315,6 @@ ggplot(abalone, aes(x=Rings, y=WholeWeight)) + geom_point(color='blue') + ggtitl
 
 
 4. Multicollinearity 
-
 
 
 ## Conclusion
