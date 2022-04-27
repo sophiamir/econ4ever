@@ -282,7 +282,25 @@ mean(abalone$`Blood Percentage`)
 
 ## Model Building
 
+Model Assumptions: 
 
+1. *Rings* are normally distributed. 
+```{r, results='markup'}
+ggplot(data=abalone, aes(x=Rings)) + geom_histogram(bins=30, color='blue') + ggtitle("Distribution of Ring Count in Abalone Shells") + xlab("Number of Rings") + ylab("Count")
+```
+
+2. Functional form: there is a linear relationship between *Rings* and the independent variables.
+```{r, results='markup'}
+
+# We can choose what variables we want here to visualize correct functional form #
+
+ggplot(abalone, aes(x=Rings, y=WholeWeight)) + geom_point(color='blue') + ggtitle("Whole Weight vs. Rings") + xlab("Rings") + ylab("Whole Weight") + geom_smooth(method='lm')
+```
+
+3. Homoscedasticity 
+
+
+4. Multicollinearity 
 
 
 
