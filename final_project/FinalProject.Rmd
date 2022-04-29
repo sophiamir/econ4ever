@@ -193,14 +193,10 @@ bp.Sex_Length <- ggplot(abalone_data, aes(x=Sex, y=Length, fill=Sex, group=Sex))
          panel.grid.major.y = element_line(color = "light grey"),
          panel.grid.minor.y = element_line(color = "light grey"),
          panel.grid.major.x = element_blank()) +
-
-bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, color=Sex, group=Sex)) +
-         geom_boxplot(outlier.shape=8, outlier.color='red') +
-         stat_boxplot(geom='errorbar', width=0.3) +
-
          xlab('Sex') +
          ylab('Length (mm)') +
          ggtitle('Length of Abalone Shells by Sex')
+
 
 bp.Sex_Length
 Anova.Sex_Length <- aov(Length ~ Sex, data = abalone)
@@ -210,7 +206,7 @@ tukey.Sex_Length
 
 
 
-bp.Sex_Diameter <- ggplot(abalone_data, aes(x=Sex, y=Diameter, fill=Sex, group=Sex)) +
+
 bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, color=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          theme(plot.title = element_text(hjust = 0.5),
@@ -230,7 +226,7 @@ tukey.Sex_Diameter <- TukeyHSD(Anova.Sex_Diameter)
 tukey.Sex_Diameter
 
 
-bp.Sex_Height <- ggplot(abalone_data, aes(x=Sex, y=Height, fill=Sex, group=Sex)) +
+
 bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, color=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          theme(plot.title = element_text(hjust = 0.5),
@@ -268,6 +264,15 @@ summary(lm4)
 
 lm5 <- lm(data=abalone, Rings ~ ShellWeight)
 summary(lm5)
+
+
+lm6<-lm(data=abalone,ShuckedWeight~WholeWeight+Length+Diameter+Height)
+summary(lm6)
+vif(lm6)
+
+lm8<-lm(data=abalone,ShuckedWeight~Diameter+Height+WholeWeight)
+summary(lm8)
+vif(lm8)
 ```
 
 ### How much of an abalone’s body weight is its blood?
