@@ -171,6 +171,9 @@ It is very hard to tell a very clear relationship between `age` and other physic
 
 ```{r,results='markup'}
 lmphysical <- lm(Rings~Length+Diameter+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data = abalone)
+#standardize the model
+beta(lmphysical)
+#summary of the model
 summary(lmphysical)
 
 #we ran a bunch of regressions and checked the R-squared values and VIF values for each one to find the best linear regression model
