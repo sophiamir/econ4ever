@@ -207,7 +207,7 @@ tukey.Sex_Length
 
 
 
-bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, color=Sex, group=Sex)) +
+bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, fill=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          theme(plot.title = element_text(hjust = 0.5),
          panel.background = element_blank(),
@@ -227,7 +227,7 @@ tukey.Sex_Diameter
 
 
 
-bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, color=Sex, group=Sex)) +
+bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, fill=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          theme(plot.title = element_text(hjust = 0.5),
          panel.background = element_blank(),
