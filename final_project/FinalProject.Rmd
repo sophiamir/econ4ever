@@ -67,8 +67,6 @@ For this project, we will be using a data set on abalone caught at sea. The data
 We've added a tenth variable `Age` to make explanations of the data easier.
 * `Age`: Age of the abalone based on its number of rings
 
-
-
 To begin with, we make a summary of the data.
 
 ```{r, results='markup'}
@@ -106,7 +104,6 @@ qqnorm(malabalone$Age, main = "Normality Plot for Age of Male Abalones")
 
 The normality plots show that the age distribution of both male and female abalones are close to being normally distributed. Running the Shapiro-Wilkes test on both shows that neither is normally distributed. As the number of females and number of males in the data are not even, we cannot run a comparison of means using hypothesis testing. Plotting the data graphically using a boxplot shows that the average age does not differ between male and female abalones. It also shows that the oldest abalone in our sample is female, while the youngest adult abalone is male.
 
-
 ```{r, results='markup'}
 
 abalone %>% ggplot(aes(x = Sex, y = Age, fill = Sex)) +
@@ -123,10 +120,8 @@ abalone %>% ggplot(aes(x = Sex, y = Age, fill = Sex)) +
 ```
 
 ```{r}
-
 sexchi <- chisq.test(abalone$Sex, abalone$Age)
 #sexchi
-
 ```
 Running a chi-squared test on the variables `Sex` and `Age` shows that there is a statistically significant association between `Age` and `Sex`. However, if we look back at the graph above, it becomes obvious that the class `I` (infant) in the variable `Sex` may be driving the association, as male and female abalones ages seem to be evenly distributed. 
 
@@ -283,7 +278,12 @@ The mean of this variable is `r mean(abalone$BloodPercentage)`, indicating that 
 
 ```{r, results='markup'}
 # Histogram #
-ggplot(data=abalone, aes(x=BloodPercentage)) + geom_histogram(color='red') + ggtitle("Percentage of Abalone Weight From Viscera") + xlab("% Viscera Weight") + ylab("Count") + scale_x_continuous(breaks = scales::pretty_breaks(n = 15), labels = percent_format(accuracy = 1)) + geom_vline(aes(xintercept=mean(BloodPercentage)), color='blue')
+ggplot(data=abalone, aes(x=BloodPercentage)) + geom_histogram(color='red') + ggtitle("Percentage of Abalone Weight From Viscera") + xlab("% Viscera Weight") + ylab("Count") + scale_x_continuous(breaks = scales::pretty_breaks(n = 15), labels = percent_format(accuracy = 1)) + geom_vline(aes(xintercept=mean(BloodPercentage)), color='blue') +theme(plot.title = element_text(hjust = 0.5),
+                           panel.background = element_blank(),
+                           panel.border = element_rect(fill = NA),
+                           panel.grid.major.y = element_line(color = "light grey"),
+                           panel.grid.minor.y = element_line(color = "light grey"),
+                           panel.grid.major.x = element_blank()) 
 ```
 
 ## Model Building
@@ -296,7 +296,12 @@ Model Assumptions:
 qqnorm(abalone$Rings, main="Q-Q Plot of Rings in Abalone Shells")
 
 # Histogram #
-ggplot(data=abalone, aes(x=Rings)) + geom_histogram(bins=30, color='blue') + ggtitle("Distribution of Ring Count in Abalone Shells") + xlab("Number of Rings") + ylab("Count")
+ggplot(data=abalone, aes(x=Rings)) + geom_histogram(bins=30, color='blue') + ggtitle("Distribution of Ring Count in Abalone Shells") + xlab("Number of Rings") + ylab("Count") + theme(plot.title = element_text(hjust = 0.5),
+                           panel.background = element_blank(),
+                           panel.border = element_rect(fill = NA),
+                           panel.grid.major.y = element_line(color = "light grey"),
+                           panel.grid.minor.y = element_line(color = "light grey"),
+                           panel.grid.major.x = element_blank())
 ```
 
 2. Functional form: there is a linear relationship between `Rings` and the independent variables.
