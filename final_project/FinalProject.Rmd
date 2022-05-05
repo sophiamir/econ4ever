@@ -416,6 +416,11 @@ From the residual plot above, it is clear that there is outlier in the plot. But
 
 4. Multicollinearity 
 
+We can use `vif()` to check the multicollinearity of these variables. Accroding to the result, we can make the conclusion that variables `Sex`, `Height`, `Age`, whose vif is less than 5, are mildly correlated, and these are acceptable. Other variables are highly correlated.
+
+```{r,results='markup'}
+vif(fullmodel)
+```
 
 ## Conclusion
 
