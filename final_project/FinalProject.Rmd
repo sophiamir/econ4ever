@@ -85,6 +85,7 @@ The SMART questions that we will be asking are:
 * What physical measurement is the best predictor of the age of the abalone shell?  
 * Does gender affect the size of the abalone shell? 
 * Do males or females live longer among the abalone species? 
+* Which weight variable is the best predictor of the age of the abalone shell?
 * How much of an abalone’s body weight is its blood? 
 
 ### Do males or females live longer in the abalone species?
@@ -144,8 +145,9 @@ First, we would like to use `corplot` to visualize the dataset to have a better 
 #make the corplot
 abalone2 <- abalone[-c(1)]
 M <- cor(abalone2)
-corplot1 <- corrplot(M,method = "number",title = "Corrplot of physical measurement")
+corplot1 <- corrplot(M,method = "number")
 corplot1
+mtext("Corrplot", at=0.8, line=-0.5, cex=1.5)
 ```
 Then, we would like to create scatterplots of physical measurements and `Age` based on the dataset.
 
@@ -326,16 +328,15 @@ Keeping these assumptions in mind, we will start specifying our model. We will t
 #the regressions were basically running each variable on the rest (except for Age since Age and Rings are perfectly collinear) to see which ones had VIF values under 10 and were statistically significant
 #we're left with the model Length~Age+Diameter+Height+WholeWeight+Sex in which Height is not statistically significant and taking it out doesn't affect the model much and doesn't change the R-squared value but we'll take it out during the analysis
 
-#lm2 <- lm(Age~Length+Diameter+Height+WholeWeight+Sex, data=abalone)
+lm2 <- lm(Age~Length+Diameter+Height+WholeWeight+Sex, data=abalone)
 
 lm3 <- lm(Length~Age+Diameter+Height+WholeWeight+Sex, data=abalone)
 
-#lm4 <- lm(Diameter~Rings+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data=abalone)
+lm4 <- lm(Diameter~Rings+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data=abalone)
 
-#lm5 <- lm(Height~Rings+Diameter+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data=abalone)
+lm5 <- lm(Height~Rings+Diameter+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data=abalone)
 
-#lm6 <- lm(WholeWeight~Rings+Diameter+Height, data=abalone)
-
+lm6 <- lm(WholeWeight~Rings+Diameter+Height, data=abalone)
 
 lm7 <- lm(ShuckedWeight~Diameter+Height, data = abalone)
 
