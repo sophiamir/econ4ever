@@ -324,6 +324,34 @@ ggplot(data=abalone, aes(x=BloodPercentage)) + geom_histogram(color='red') + ggt
 
 This histogram allows us to see that the distrubition of this percentage is relatively normal. 
 
+1. `Rings` are normally distributed. 
+```{r, results='markup'}
+# Q Q plot #
+qqnorm(abalone$Rings, main="Q-Q Plot of Rings in Abalone Shells")
+
+# Histogram #
+ggplot(data=abalone, aes(x=Rings)) + geom_histogram(bins=30, color='blue') + ggtitle("Distribution of Ring Count in Abalone Shells") + xlab("Number of Rings") + ylab("Count") + theme(plot.title = element_text(hjust = 0.5),
+                           panel.background = element_blank(),
+                           panel.border = element_rect(fill = NA),
+                           panel.grid.major.y = element_line(color = "light grey"),
+                           panel.grid.minor.y = element_line(color = "light grey"),
+                           panel.grid.major.x = element_blank())
+```
+
+2. Functional form: there is a linear relationship between `Rings` and the independent variables.
+```{r, results='markup'}
+
+# All LM plots #
+fullmodel <- lm(data=abalone, Rings~.)
+plot(fullmodel)
+
+# Scatterplot #
+# We can choose what variable we want to plot with Rings here to visualize correct functional form #
+ggplot(abalone, aes(x=Rings, y=WholeWeight)) + geom_point(color='blue') + ggtitle("Whole Weight vs. Rings") + xlab("Rings") + ylab("Whole Weight") + geom_smooth(method='lm')
+```
+
+
+
 ## Model Building
 
 ### Linear Model Assumptions: 
@@ -339,7 +367,7 @@ Keeping these assumptions in mind, we will start specifying our model. We will t
 
 ### Model Specification
 
-The Abalone data allows us to create a model to predict the weight of the meat of Abalones after the shell has been removed. This can have real-world applications in preventing overfishing by incentivising fisherwomen and fishermen to only capture the mollusks that will have the most meat rather than fishing indiscriminately. This is the model that we ultimately found to be the best. In order to create this model we ran a great number of regressions trying out different model specifications, some of which are documented below:
+The Abalone data allows us to create a model to predict the weight of the meat of Abalones after the shell has been removed. This can have real-world applications in preventing overfishing by incentivizing fisherwomen and fishermen to only capture the mollusks that will have the most meat rather than fishing indiscriminately. This is the model that we ultimately found to be the best. In order to create this model we ran a great number of regressions trying out different model specifications, some of which are documented below:
 
 Model 1: Age~Length+Diameter+Height+WholeWeight+Sex
 Model 2: Length~Age+Diameter+Height+WholeWeight+Sex
@@ -398,67 +426,64 @@ xkabledply(lm7)
 
 #shows functional form misspecification - let's try creating linear models with quadratics and see if it fixes the heteroskedasticity or at least changes the shape of the fitted vs residuals graph
 
-
 ```
 
 ### Model Features Testing
 
+Here we start testing our model for heteroscedasticity and multicollinearity.
 
-1. `Rings` are normally distributed. 
-```{r, results='markup'}
-# Q Q plot #
-qqnorm(abalone$Rings, main="Q-Q Plot of Rings in Abalone Shells")
+- Homoscedasticity 
 
-# Histogram #
-ggplot(data=abalone, aes(x=Rings)) + geom_histogram(bins=30, color='blue') + ggtitle("Distribution of Ring Count in Abalone Shells") + xlab("Number of Rings") + ylab("Count") + theme(plot.title = element_text(hjust = 0.5),
-                           panel.background = element_blank(),
-                           panel.border = element_rect(fill = NA),
-                           panel.grid.major.y = element_line(color = "light grey"),
-                           panel.grid.minor.y = element_line(color = "light grey"),
-                           panel.grid.major.x = element_blank())
-```
-
-2. Functional form: there is a linear relationship between `Rings` and the independent variables.
-```{r, results='markup'}
-
-# All LM plots #
-fullmodel <- lm(data=abalone, Rings~.)
-plot(fullmodel)
-
-# Scatterplot #
-# We can choose what variable we want to plot with Rings here to visualize correct functional form #
-ggplot(abalone, aes(x=Rings, y=WholeWeight)) + geom_point(color='blue') + ggtitle("Whole Weight vs. Rings") + xlab("Rings") + ylab("Whole Weight") + geom_smooth(method='lm')
-```
-
-3. Homoscedasticity 
+We created residual plots using Model 6 to check for heteroskedasticity. Plotting it initially we get the graphs shown below:
 
 ```{r, results='markup'}
 
 #plotting residuals to check for heteroskedasticity 
 #plots for length as the dependent variable
-plot(lm3)
+#plot(lm3)
 
 #plots for age as the dependent variables
-plot(lm2)
+#plot(lm2)
 
 plot(lm7)
+```
+Looking at the plots we can see that the distribution is not normal and the error terms are not normally distributed. The Cook's Distance also tells us that we have at least one influential outlier. In order to fix some of these issues, we tried to change the functional form of our model. The first solution we tried was to take the square of each dependent variable in turn to get Models 7 & 8.
 
+Model 7: ShuckedWeight~I(Diameter*Diameter)+Height
+Model 8: ShuckedWeight~Diameter+I(Height*Height)
 
+Plotting Model 7 gave us the following residual plots:
+
+```{r, results='markup'}
 lm8 <- lm(ShuckedWeight~I(Diameter*Diameter)+Height, data = abalone)
 
 plot(lm8)
 
+```
 
+
+Plotting Model 8 gave us the following residual plots:
+```{r}
 lm9 <- lm(ShuckedWeight~Diameter+I(Height*Height), data = abalone)
 
 plot(lm9)
 
+```
 
+Neither gave us the best version of the model, so we decided to take the log of our dependent variable and create Model 9:
+
+Model 9: log(ShuckedWeight)~Diameter+Height
+
+The residual plots for Model 9 are:
+
+```{r}
 lm10 <- lm(log(ShuckedWeight)~Diameter+Height, data = abalone)
 
 plot(lm10)
 
 ```
+
+Taking the log of the dependent variable gives us a better distribution of the residuals and turns the influential outlier into a noninfluential outlier. It does not completely get rid of the heteroscedasticity but that is not a big problem since we can just use robust standard errors for t-distribution and F-distribution testing if necessary. 
 
 4. Multicollinearity 
 
