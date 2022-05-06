@@ -52,7 +52,6 @@ abalone <- abalone[, -c(1)]
 #adding a column for the age of the abalone
 abalone$Age <- abalone$Rings + 1.5
 
-
 ```
 
 The dataset contains `r nrow(abalone)` instances with `r length(colnames(abalone))-1` explanatory and 1 dependent variable - *Rings* all of which are numerical, except for the sex variable which is essentially a factor variable. Also, the dataset does not appear to contain any missing field which appeared to be a good fit for the analyses. The observations in the data set represent different individual abalone shells and their respective physical attributes. 
@@ -130,8 +129,6 @@ sexchi <- chisq.test(abalone$Sex, abalone$Age)
 #sexchi
 
 sexchi
-
-
 ```
 Running a chi-squared test on the variables `Sex` and `Age` shows that there is a statistically significant association between `Age` and `Sex`. However, if we look back at the graph above, it becomes obvious that the class `I` (infant) in the variable `Sex` may be driving the association, as male and female abalones ages seem to be evenly distributed. 
 
@@ -139,8 +136,7 @@ The data shows that there is no gender disparity when it comes to the lifespan o
 
 ### What physical measurement is the best predictor of age in an abalone?
 
-First, we would like to use `corplot` to visualize the dataset to have a better overview of that.
-
+First, we would like to use `corplot` to visualize the dataset to have a better view of the associations between variables.
 ```{r,results='markup'}
 #make the corplot
 abalone2 <- abalone[-c(1)]
@@ -176,17 +172,23 @@ lmphysical <- lm(Rings~Length+Diameter+Height+WholeWeight+ShuckedWeight+VisceraW
 beta(lmphysical)
 #summary of the model
 stargazer(lmphysical,type = "text")
+summary(lmphysical)
 ```
 
-According to the result of the regression, we can get that the equation is as following: \
+According to the result of the regression, we can get the following equation: \
 `Rings` = 2.985-1.572`Length`+13.361`Diameter`+11.826`Height`+9.247`WholeWeight`-20.214`ShuckedWeight`-9.830`VisceraWeight`+8.576`ShellWeight`\
-Because we get a very small P-value and the adjusted R-squared is 0.5268, we can say that this model is statistically significant.
+Because we get very small P-values and the adjusted R-squared is 0.5268, we can say that this model is statistically significant.
 Meanwhile, all of the variables except `Length` are statistically significant. 
+
 Because the coefficient on `ShuckedWeight` is the biggest, so we can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of meat.
 
 ### Does gender affect the size of the abalone shell?
 
 To evaluate this question we will first look at the boxplots for Length, Diameter, and Height separated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
+
+We can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of the abalone's meat.
+
+
 
 ```{r, results='markup'}
 
@@ -194,19 +196,20 @@ To evaluate this question we will first look at the boxplots for Length, Diamete
 bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, fill=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') + 
          theme(plot.title = element_text(hjust = 0.5),
-         panel.background = element_blank(),
-         panel.border = element_rect(fill = NA),
-         panel.grid.major.y = element_line(color = "light grey"),
-         panel.grid.minor.y = element_line(color = "light grey"),
-         panel.grid.major.x = element_blank()) 
+               panel.background = element_blank(),
+               panel.border = element_rect(fill = NA),
+               panel.grid.major.y = element_line(color = "light grey"),
+               panel.grid.minor.y = element_line(color = "light grey"),
+               panel.grid.major.x = element_blank(),
+               panel.grid.major.x = element_blank()) 
 
 bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, color=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          stat_boxplot(geom='errorbar', width=0.3) +
-
          xlab('Sex') +
          ylab('Length (mm)') +
          ggtitle('Length of Abalone Shells by Sex')
+
 
 bp.Sex_Length
 Anova.Sex_Length <- aov(Length ~ Sex, data = abalone)
@@ -215,6 +218,7 @@ tukey.Sex_Length <- TukeyHSD(Anova.Sex_Length)
 tukey.Sex_Length
 
 
+bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, fill=Sex, group=Sex)) +
 
 bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, fill=Sex, group=Sex))
 bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, color=Sex, group=Sex)) +
@@ -235,6 +239,8 @@ summary(Anova.Sex_Diameter)
 tukey.Sex_Diameter <- TukeyHSD(Anova.Sex_Diameter)
 tukey.Sex_Diameter
 
+
+bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, fill=Sex, group=Sex)) +
 
 bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, fill=Sex, group=Sex))
 bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, color=Sex, group=Sex)) +
@@ -257,6 +263,7 @@ tukey.Sex_Height
 
 ```
 
+
 Now, we would like to draw a residual plot to see if the dataset satisfies the homoskedasticity or not.
 
 ```{r,results='markup'}
@@ -265,7 +272,6 @@ residualplot1 <- plot(fitted(lmphysical),res,
                       xlab = "fitted value", ylab = "residuals", main = "residual plot") + 
   abline(0,0)
 ```
-
 
 ### Which weight variable is the best predictor of the age of the abalone shell? 
 
@@ -284,6 +290,15 @@ summary(lm4)
 
 lm5 <- lm(data=abalone, Rings ~ ShellWeight)
 summary(lm5)
+
+
+lm6<-lm(data=abalone,ShuckedWeight~WholeWeight+Length+Diameter+Height)
+summary(lm6)
+vif(lm6)
+
+lm8<-lm(data=abalone,ShuckedWeight~Diameter+Height+WholeWeight)
+summary(lm8)
+vif(lm8)
 ```
 
 ### How much of an abalone’s body weight is its blood?
@@ -307,6 +322,8 @@ ggplot(data=abalone, aes(x=BloodPercentage)) + geom_histogram(color='red') + ggt
                            panel.grid.major.x = element_blank()) 
 ```
 
+This histogram allows us to see that the distrubition of this percentage is relatively normal. 
+
 ## Model Building
 
 ### Linear Model Assumptions: 
@@ -318,9 +335,20 @@ ggplot(data=abalone, aes(x=BloodPercentage)) + geom_histogram(color='red') + ggt
 5. Homoskedasticity.
 6. Error terms are normally distributed.
 
-Keeping these assumptions in mind, we will start specifying our model. We will test our chosen model to see if it violates any of these assumptions beyond the acceptable amount. We will be using qqplots, the Shapiro-Wilkes test, and bar plots to check the distribution of our data. We will be using the residual plots to check for homoscedasticity, and influential outliers.
+Keeping these assumptions in mind, we will start specifying our model. We will test our chosen model to see if it violates any of these assumptions beyond the acceptable amount. We will be using qqplots, the Shapiro-Wilkes test, and bar plots to check the distribution of our data. We will be using the residual plots to check for homoscedasticity, and influential outliers and the variance inflation factor (VIF) test to check for multicollinearity.
 
 ### Model Specification
+
+The Abalone data allows us to create a model to predict the weight of the meat of Abalones after the shell has been removed. This can have real-world applications in preventing overfishing by incentivising fisherwomen and fishermen to only capture the mollusks that will have the most meat rather than fishing indiscriminately. This is the model that we ultimately found to be the best. In order to create this model we ran a great number of regressions trying out different model specifications, some of which are documented below:
+
+Model 1: Age~Length+Diameter+Height+WholeWeight+Sex
+Model 2: Length~Age+Diameter+Height+WholeWeight+Sex
+Model 3: Diameter~Rings+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight
+Model 4: Height~Rings+Diameter+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight
+Model 5: WholeWeight~Rings+Diameter+Height
+Model 6: ShuckedWeight~Diameter+Height
+
+We checked the R-squared and VIF values of all the models that we created as an initial test of the goodness of fit. Model 2 had the highest R-squared value at 97.5% and had VIF values under 10. However, the model did not have any useful practical applications so we ultimately decided to move forward with model 6. Model 6 initially had an R-squared value of 80% and VIFs below 10. We've added the summary tables for Model 2 and Model 6 below. All the coefficients in our chosen model are statistically significant at the 1% level.
 
 ```{r}
 
@@ -340,62 +368,41 @@ lm6 <- lm(WholeWeight~Rings+Diameter+Height, data=abalone)
 
 lm7 <- lm(ShuckedWeight~Diameter+Height, data = abalone)
 
-lm8 <- lm(ShuckedWeight~I(Diameter*Diameter)+Height, data = abalone)
 
-lm9 <- lm(ShuckedWeight~Diameter+I(Height*Height), data = abalone)
-
-lm10 <- lm(log(ShuckedWeight)~Diameter+Height, data = abalone)
 
 #comparing R-squared values 
-summary(lm2)
-summary(lm3)
-summary(lm4)
-summary(lm5)
-summary(lm6)
-summary(lm7)
-summary(lm8)
-summary(lm9)
-summary(lm10)
+#summary(lm2)
+#summary(lm3)
+#summary(lm4)
+#summary(lm5)
+#summary(lm6)
+#summary(lm7)
+#summary(lm8)
+#summary(lm9)
+#summary(lm10)
 
 xkabledply(lm3)
 xkabledply(lm7)
 xkabledply(lm10)
 
 #summary(lm2)
-summary(lm3)
+#summary(lm3)
 #summary(lm4)
 #summary(lm5)
 #summary(lm6)
 
 
-#checking for multicollinearity
-vif(lm3)
-vif(lm2)
-vif(lm7)
-vif(lm8)
-vif(lm9)
-vif(lm10)
 
-#plotting residuals to check for heteroskedasticity 
-#plots for length as the dependent variable
-plot(lm3)
-
-#plots for age as the dependent variables
-plot(lm2)
-
-plot(lm7)
-plot(lm8)
-plot(lm9)
-plot(lm10)
-
-beta(lm3)
+#beta(lm3)
 
 
 #shows functional form misspecification - let's try creating linear models with quadratics and see if it fixes the heteroskedasticity or at least changes the shape of the fitted vs residuals graph
 
 
-
 ```
+
+### Model Features Testing
+
 
 1. `Rings` are normally distributed. 
 ```{r, results='markup'}
@@ -425,23 +432,56 @@ ggplot(abalone, aes(x=Rings, y=WholeWeight)) + geom_point(color='blue') + ggtitl
 
 3. Homoscedasticity 
 
-```{r,results='markup'}
-res <- resid(fullmodel)
-plot1 <- plot(fitted.values(fullmodel),res,xlab = "fitted values",ylab = "residuals",main = "residual plot") + abline(0,0)
-plot1
-```
-From the residual plot above, it is clear that there is outlier in the plot. But most of the residuals are the same value.
+```{r, results='markup'}
 
+#plotting residuals to check for heteroskedasticity 
+#plots for length as the dependent variable
+plot(lm3)
+
+#plots for age as the dependent variables
+plot(lm2)
+
+plot(lm7)
+
+
+lm8 <- lm(ShuckedWeight~I(Diameter*Diameter)+Height, data = abalone)
+
+plot(lm8)
+
+
+lm9 <- lm(ShuckedWeight~Diameter+I(Height*Height), data = abalone)
+
+plot(lm9)
+
+
+lm10 <- lm(log(ShuckedWeight)~Diameter+Height, data = abalone)
+
+plot(lm10)
+
+```
 
 4. Multicollinearity 
 
-We can use `vif()` to check the multicollinearity of these variables. Accroding to the result, we can make the conclusion that variables `Sex`, `Height`, `Age`, whose vif is less than 5, are mildly correlated, and these are acceptable. Other variables are highly correlated.
-
-```{r,results='markup'}
-vif(fullmodel)
-```
+```{r, results='markup'}
+#checking for multicollinearity
+#vif(lm3)
+#vif(lm2)
+vif(lm7)
+vif(lm8)
+vif(lm9)
+vif(lm10)
 
 ## Conclusion
+
+
+
+## References
+Aquaculture Stewardship Council. Farming and eating abalone responsibly.https://www.asc-aqua.org/aquaculture-explained/how-asc-can-help-you-eat-seafood-responsibly/farming-and-eating-abalone-responsibly/
+
+Dua, D. and Graff, C. (2019). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School of Information and Computer Science.
+
+Petsko, E. (2020). Devastated by overfishing and climate change, California’s abalone face a rocky road to recovery., 2022, from https://oceana.org/blog/devastated-overfishing-and-climate-change-californias-abalone-face-rocky-road-recovery/
+
 
 
 
