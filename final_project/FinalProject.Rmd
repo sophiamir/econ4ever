@@ -23,6 +23,9 @@ library(tidyverse)
 library(corrplot)
 library(ggplot2)
 library(faraway)
+library(reghelper)
+library(scales)
+
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
 options(scientific=T, digits = 3) 
@@ -66,9 +69,7 @@ For this project, we will be using a data set on abalone caught at sea. The data
 We've added a tenth variable `Age` to make explanations of the data easier.
 * `Age`: Age of the abalone based on its number of rings
 
-
-
-To begin with, we make a summary of the data.
+To begin, we make a summary of the data.
 
 ```{r, results='markup'}
 xkablesummary(abalone, title = "Summary Statistics for the Abalone Data:")
@@ -105,7 +106,6 @@ qqnorm(malabalone$Age, main = "Normality Plot for Age of Male Abalones")
 
 The normality plots show that the age distribution of both male and female abalones are close to being normally distributed. Running the Shapiro-Wilkes test on both shows that neither is normally distributed. As the number of females and number of males in the data are not even, we cannot run a comparison of means using hypothesis testing. Plotting the data graphically using a boxplot shows that the average age does not differ between male and female abalones. It also shows that the oldest abalone in our sample is female, while the youngest adult abalone is male.
 
-
 ```{r, results='markup'}
 
 abalone %>% ggplot(aes(x = Sex, y = Age, fill = Sex)) +
@@ -122,9 +122,12 @@ abalone %>% ggplot(aes(x = Sex, y = Age, fill = Sex)) +
 ```
 
 ```{r}
-
 sexchi <- chisq.test(abalone$Sex, abalone$Age)
+
 #sexchi
+
+sexchi
+
 
 ```
 Running a chi-squared test on the variables `Sex` and `Age` shows that there is a statistically significant association between `Age` and `Sex`. However, if we look back at the graph above, it becomes obvious that the class `I` (infant) in the variable `Sex` may be driving the association, as male and female abalones ages seem to be evenly distributed. 
@@ -146,53 +149,35 @@ Then, we would like to run a linear regression to find the best predictor of the
 
 ```{r,results='markup'}
 lmphysical <- lm(Rings~Length+Diameter+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data = abalone)
-summary(lm1)
+summary(lmphysical)
 
-#we ran a bunch of regressions and checked the R-squared values and VIF values for each one to find the best linear regression model
-#the regressions were basically running each variable on the rest (except for Age since Age and Rings are perfectly collinear) to see which ones had VIF values under 10 and were statistically significant
-#we're left with the model Length~Age+Diameter+Height+WholeWeight+Sex in which Height is not statistically significant and taking it out doesn't affect the model much and doesn't change the R-squared value but we'll take it out during the analysis
-
-#lm2 <- lm(Age~Length+Diameter+Height+WholeWeight+Sex, data=abalone)
-
-lm3 <- lm(Length~Age+Diameter+Height+WholeWeight+Sex, data=abalone)
-
-#lm4 <- lm(Diameter~Rings+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data=abalone)
-
-#lm5 <- lm(Height~Rings+Diameter+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data=abalone)
-
-#lm6 <- lm(WholeWeight~Rings+Diameter+Height, data=abalone)
-
-summary(lm2)
-summary(lm3)
-summary(lm4)
-summary(lm5)
-summary(lm6)
-
-vif(lm3)
 
 ```
 
-According to the result of the regression, we can get that the equation is as following:
-`Rings` = 2.985-1.572`Length`+13.361`Diameter`+11.826`Height`+9.247`WholeWeight`-20.214`ShuckedWeight`-9.830`VisceraWeight`+8.576`ShellWeight`
+According to the result of the regression, we can get that the equation is as following: \
+`Rings` = 2.985-1.572`Length`+13.361`Diameter`+11.826`Height`+9.247`WholeWeight`-20.214`ShuckedWeight`-9.830`VisceraWeight`+8.576`ShellWeight`\
 Because we get a very small P-value and the adjusted R-squared is 0.5268, we can say that this model is statistically significant.
 Meanwhile, all of the variables except `Length` are statistically significant. 
 We can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of meat.
 
 ### Does gender affect the size of the abalone shell?
 
-To evaluate this question we will first look at the boxplots for Length, Diameter, and Height seperated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
+To evaluate this question we will first look at the boxplots for Length, Diameter, and Height separated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
+
+To evaluate this question, we will first look at boxplots for Length, Diameter, and Height seperated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
+
 
 ```{r, results='markup'}
 
 
-bp.Sex_Length <- ggplot(abalone_data, aes(x=Sex, y=Length, fill=Sex, group=Sex)) +
+bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, fill=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') + 
          theme(plot.title = element_text(hjust = 0.5),
          panel.background = element_blank(),
          panel.border = element_rect(fill = NA),
          panel.grid.major.y = element_line(color = "light grey"),
          panel.grid.minor.y = element_line(color = "light grey"),
-         panel.grid.major.x = element_blank()) +
+         panel.grid.major.x = element_blank()) 
 
 bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, color=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
@@ -210,7 +195,7 @@ tukey.Sex_Length
 
 
 
-bp.Sex_Diameter <- ggplot(abalone_data, aes(x=Sex, y=Diameter, fill=Sex, group=Sex)) +
+bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, fill=Sex, group=Sex))
 bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, color=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          theme(plot.title = element_text(hjust = 0.5),
@@ -230,7 +215,7 @@ tukey.Sex_Diameter <- TukeyHSD(Anova.Sex_Diameter)
 tukey.Sex_Diameter
 
 
-bp.Sex_Height <- ggplot(abalone_data, aes(x=Sex, y=Height, fill=Sex, group=Sex)) +
+bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, fill=Sex, group=Sex))
 bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, color=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          theme(plot.title = element_text(hjust = 0.5),
@@ -271,19 +256,147 @@ summary(lm5)
 ```
 
 ### How much of an abalone’s body weight is its blood?
-
 ```{r}
+abalone$'BloodPercentage' <- abalone$VisceraWeight/abalone$ShuckedWeight
+mean(abalone$`BloodPercentage`)
+```
 
-abalone$'Blood Percentage' <- abalone$VisceraWeight/abalone$ShuckedWeight
+To answer this question, we created a new  variable entitled `BloodPercentage` that is the amount of weight from viscera divided by the total weight of the meat. 
 
-mean(abalone$`Blood Percentage`)
+The mean of this variable is `r mean(abalone$BloodPercentage)`, indicating that `r mean(abalone$BloodPercentage)*100`% of the average abalone's weight is from the viscera organs.
 
+```{r, results='markup'}
+# Histogram #
+ggplot(data=abalone, aes(x=BloodPercentage)) + geom_histogram(color='red') + ggtitle("Percentage of Abalone Weight From Viscera") + xlab("% Viscera Weight") + ylab("Count") + scale_x_continuous(breaks = scales::pretty_breaks(n = 15), labels = percent_format(accuracy = 1)) + geom_vline(aes(xintercept=mean(BloodPercentage)), color='blue') +theme(plot.title = element_text(hjust = 0.5),
+                           panel.background = element_blank(),
+                           panel.border = element_rect(fill = NA),
+                           panel.grid.major.y = element_line(color = "light grey"),
+                           panel.grid.minor.y = element_line(color = "light grey"),
+                           panel.grid.major.x = element_blank()) 
 ```
 
 ## Model Building
 
+### Linear Model Assumptions: 
+
+1. Linear in parameters.
+2. The independent variables data were randomly selected.
+3. There is no multicollinearity between the independent variables.
+4. The error term has no correlation with any of the independent variables i.e. the zero conditional mean assumption is not violated.
+5. Homoskedasticity.
+6. Error terms are normally distributed.
+
+Keeping these assumptions in mind, we will start specifying our model. We will test our chosen model to see if it violates any of these assumptions beyond the acceptable amount. We will be using qqplots, the Shapiro-Wilkes test, and bar plots to check the distribution of our data. We will be using the residual plots to check for homoscedasticity, and influential outliers.
+
+### Model Specification
+
+```{r}
+
+#we ran a bunch of regressions and checked the R-squared values and VIF values for each one to find the best linear regression model
+#the regressions were basically running each variable on the rest (except for Age since Age and Rings are perfectly collinear) to see which ones had VIF values under 10 and were statistically significant
+#we're left with the model Length~Age+Diameter+Height+WholeWeight+Sex in which Height is not statistically significant and taking it out doesn't affect the model much and doesn't change the R-squared value but we'll take it out during the analysis
+
+#lm2 <- lm(Age~Length+Diameter+Height+WholeWeight+Sex, data=abalone)
+
+lm3 <- lm(Length~Age+Diameter+Height+WholeWeight+Sex, data=abalone)
+
+#lm4 <- lm(Diameter~Rings+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data=abalone)
+
+#lm5 <- lm(Height~Rings+Diameter+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data=abalone)
+
+#lm6 <- lm(WholeWeight~Rings+Diameter+Height, data=abalone)
 
 
+lm7 <- lm(ShuckedWeight~Diameter+Height, data = abalone)
+
+lm8 <- lm(ShuckedWeight~I(Diameter*Diameter)+Height, data = abalone)
+
+lm9 <- lm(ShuckedWeight~Diameter+I(Height*Height), data = abalone)
+
+lm10 <- lm(log(ShuckedWeight)~Diameter+Height, data = abalone)
+
+#comparing R-squared values 
+summary(lm2)
+summary(lm3)
+summary(lm4)
+summary(lm5)
+summary(lm6)
+summary(lm7)
+summary(lm8)
+summary(lm9)
+summary(lm10)
+
+xkabledply(lm3)
+xkabledply(lm7)
+xkabledply(lm10)
+
+#summary(lm2)
+summary(lm3)
+#summary(lm4)
+#summary(lm5)
+#summary(lm6)
+
+
+#checking for multicollinearity
+vif(lm3)
+vif(lm2)
+vif(lm7)
+vif(lm8)
+vif(lm9)
+vif(lm10)
+
+#plotting residuals to check for heteroskedasticity 
+#plots for length as the dependent variable
+plot(lm3)
+
+#plots for age as the dependent variables
+plot(lm2)
+
+plot(lm7)
+plot(lm8)
+plot(lm9)
+plot(lm10)
+
+beta(lm3)
+
+
+#shows functional form misspecification - let's try creating linear models with quadratics and see if it fixes the heteroskedasticity or at least changes the shape of the fitted vs residuals graph
+
+
+
+```
+
+1. `Rings` are normally distributed. 
+```{r, results='markup'}
+# Q Q plot #
+qqnorm(abalone$Rings, main="Q-Q Plot of Rings in Abalone Shells")
+
+# Histogram #
+ggplot(data=abalone, aes(x=Rings)) + geom_histogram(bins=30, color='blue') + ggtitle("Distribution of Ring Count in Abalone Shells") + xlab("Number of Rings") + ylab("Count") + theme(plot.title = element_text(hjust = 0.5),
+                           panel.background = element_blank(),
+                           panel.border = element_rect(fill = NA),
+                           panel.grid.major.y = element_line(color = "light grey"),
+                           panel.grid.minor.y = element_line(color = "light grey"),
+                           panel.grid.major.x = element_blank())
+```
+
+2. Functional form: there is a linear relationship between `Rings` and the independent variables.
+```{r, results='markup'}
+
+# All LM plots #
+fullmodel <- lm(data=abalone, Rings~.)
+plot(fullmodel)
+
+# Scatterplot #
+# We can choose what variable we want to plot with Rings here to visualize correct functional form #
+ggplot(abalone, aes(x=Rings, y=WholeWeight)) + geom_point(color='blue') + ggtitle("Whole Weight vs. Rings") + xlab("Rings") + ylab("Whole Weight") + geom_smooth(method='lm')
+```
+
+3. Homoscedasticity 
+
+
+
+4. Multicollinearity 
 
 
 ## Conclusion
