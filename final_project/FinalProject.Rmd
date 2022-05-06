@@ -49,7 +49,6 @@ abalone <- abalone[, -c(1)]
 #adding a column for the age of the abalone
 abalone$Age <- abalone$Rings + 1.5
 
-
 ```
 
 The dataset contains `r nrow(abalone)` instances with `r length(colnames(abalone))-1` explanatory and 1 dependent variable - *Rings* all of which are numerical, except for the sex variable which is essentially a factor variable. Also, the dataset does not appear to contain any missing field which appeared to be a good fit for the analyses. The observations in the data set represent different individual abalone shells and their respective physical attributes. 
@@ -126,8 +125,6 @@ sexchi <- chisq.test(abalone$Sex, abalone$Age)
 #sexchi
 
 sexchi
-
-
 ```
 Running a chi-squared test on the variables `Sex` and `Age` shows that there is a statistically significant association between `Age` and `Sex`. However, if we look back at the graph above, it becomes obvious that the class `I` (infant) in the variable `Sex` may be driving the association, as male and female abalones ages seem to be evenly distributed. 
 
@@ -135,7 +132,7 @@ The data shows that there is no gender disparity when it comes to the lifespan o
 
 ### What physical measurement is the best predictor of age in an abalone?
 
-First, we would like to use `corplot` to visualize the dataset to have a better overview of that.
+First, we would like to use `corplot` to visualize the dataset to have a better view of the associations between variables.
 ```{r,results='markup'}
 #make the corplot
 abalone2 <- abalone[-c(1)]
@@ -149,22 +146,17 @@ Then, we would like to run a linear regression to find the best predictor of the
 ```{r,results='markup'}
 lmphysical <- lm(Rings~Length+Diameter+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data = abalone)
 summary(lmphysical)
-
-
 ```
 
-According to the result of the regression, we can get that the equation is as following: \
+According to the result of the regression, we can get the following equation: \
 `Rings` = 2.985-1.572`Length`+13.361`Diameter`+11.826`Height`+9.247`WholeWeight`-20.214`ShuckedWeight`-9.830`VisceraWeight`+8.576`ShellWeight`\
-Because we get a very small P-value and the adjusted R-squared is 0.5268, we can say that this model is statistically significant.
+Because we get very small P-values and the adjusted R-squared is 0.5268, we can say that this model is statistically significant.
 Meanwhile, all of the variables except `Length` are statistically significant. 
-We can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of meat.
+We can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of the abalone's meat.
 
 ### Does gender affect the size of the abalone shell?
 
-To evaluate this question we will first look at the boxplots for Length, Diameter, and Height separated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
-
-To evaluate this question, we will first look at boxplots for Length, Diameter, and Height seperated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
-
+To evaluate this question we will first look at the boxplots for Length, Diameter, and Height separated by Sex. Then we will run ANOVA tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
 
 ```{r, results='markup'}
 
@@ -172,12 +164,12 @@ To evaluate this question, we will first look at boxplots for Length, Diameter, 
 bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, fill=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') + 
          theme(plot.title = element_text(hjust = 0.5),
-         panel.background = element_blank(),
-         panel.border = element_rect(fill = NA),
-         panel.grid.major.y = element_line(color = "light grey"),
-         panel.grid.minor.y = element_line(color = "light grey"),
-         panel.grid.major.x = element_blank()) +
-         panel.grid.major.x = element_blank()) 
+               panel.background = element_blank(),
+               panel.border = element_rect(fill = NA),
+               panel.grid.major.y = element_line(color = "light grey"),
+               panel.grid.minor.y = element_line(color = "light grey"),
+               panel.grid.major.x = element_blank(),
+               panel.grid.major.x = element_blank()) 
 
 bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, color=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
@@ -239,6 +231,7 @@ tukey.Sex_Height
 
 ```
 
+
 ```{r}
 lm1 <- lm(data=abalone, Rings ~ WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight)
 summary(lm1)
@@ -284,6 +277,8 @@ ggplot(data=abalone, aes(x=BloodPercentage)) + geom_histogram(color='red') + ggt
                            panel.grid.minor.y = element_line(color = "light grey"),
                            panel.grid.major.x = element_blank()) 
 ```
+
+This histogram allows us to see that the distrubition of this percentage is relatively normal. 
 
 ## Model Building
 
@@ -439,6 +434,16 @@ vif(lm10)
 ```
 
 ## Conclusion
+
+
+
+## References
+Aquaculture Stewardship Council. Farming and eating abalone responsibly.https://www.asc-aqua.org/aquaculture-explained/how-asc-can-help-you-eat-seafood-responsibly/farming-and-eating-abalone-responsibly/
+
+Dua, D. and Graff, C. (2019). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School of Information and Computer Science.
+
+Petsko, E. (2020). Devastated by overfishing and climate change, California’s abalone face a rocky road to recovery., 2022, from https://oceana.org/blog/devastated-overfishing-and-climate-change-californias-abalone-face-rocky-road-recovery/
+
 
 
 
