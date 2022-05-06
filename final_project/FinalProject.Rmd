@@ -292,6 +292,7 @@ tukey.Sex_Height
 
 ```
 
+=======
 
 Now, we would like to draw a residual plot to see if the dataset satisfies the homoskedasticity or not.
 
@@ -516,18 +517,39 @@ Taking the log of the dependent variable gives us a better distribution of the r
 
 4. Multicollinearity 
 
+Next, we looked at the Variance Inflaction Factors to check for multicollinearity within our models. 
+
 ```{r, results='markup'}
 #checking for multicollinearity
 #vif(lm3)
 #vif(lm2)
 vif(lm7)
-vif(lm8)
-vif(lm9)
-vif(lm10)
+```
 
+The VIF values for Model 7 indicate that there is no multicollinearity between Diameter and Height. 
+
+```{r, results='markup'}
+vif(lm8)
+```
+
+Similarly, the VIF values for Model 8 indicate that there is no multicollinearity. 
+
+```{r, results='markup'}
+vif(lm9)
+```
+
+The VIF values drop in Model 9 to 1.19.
+
+```{r, results='markup'}
+vif(lm10)
+```
+
+
+The VIF values in Model 10 increse to 3.28 again, but there is still no evidence of multicollinearity within these models. 
+
+```{r, results='markup'}
 
 xkabledply(lm10)
-
 ```
 
 
