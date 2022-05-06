@@ -339,7 +339,7 @@ lm7 <- lm(ShuckedWeight~Diameter+Height, data = abalone)
 
 xkabledply(lm3)
 xkabledply(lm7)
-xkabledply(lm10)
+
 
 #summary(lm2)
 #summary(lm3)
@@ -430,6 +430,7 @@ vif(lm8)
 vif(lm9)
 vif(lm10)
 
+xkabledply(lm10)
 
 ```
 
