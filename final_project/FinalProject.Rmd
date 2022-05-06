@@ -231,6 +231,7 @@ tukey.Sex_Height <- TukeyHSD(Anova.Sex_Height)
 tukey.Sex_Height
 
 ```
+
 ### How much of an abalone’s body weight is its blood?
 ```{r}
 abalone$'BloodPercentage' <- abalone$VisceraWeight/abalone$ShuckedWeight
