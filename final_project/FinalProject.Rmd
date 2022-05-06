@@ -1,18 +1,20 @@
 ---
 title: "Final Project - Abalone"
 author: "econ4ever"
-# date: "today"
 date: "`r Sys.Date()`"
-output: 
-  html_document:
-    code_folding: hide
-    number_sections: false
+output:
+  word_document:
     toc: yes
-    toc_depth: 3
-    toc_float: yes
+    toc_depth: '3'
   pdf_document:
     toc: yes
     toc_depth: '3'
+  html_document:
+    code_folding: hide
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
 ---
 
 ```{r init, include=FALSE}
@@ -37,6 +39,8 @@ options(scientific=T, digits = 3)
 # Abalones R' Us
 
 ## Introduction 
+
+Abalones are marine snails and are considered to be a delicacy in most parts of the world. Their shells also have iridescent properties which allows them to be used in jewelry and accessory making. Due to their many uses, especially in cookery Abalones are at threat of extinction due to over fishing. The team goal of this analysis is to create a model that would help stop the abalone population decline by proiding fishermen and fisherwomen information on which abalones to harvest and avoid nonselective overfishing. Similar practices exist for other marine and shell organisms. With this in mind, some of the variables in the dataset that we will be exploring are size, gender, age and weight.
 
 ```{r}
 
@@ -164,7 +168,7 @@ We can make the conclusion that the best predictor in physical measurement is `S
 
 To evaluate this question we will first look at the boxplots for Length, Diameter, and Height separated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
 
-To evaluate this question, we will first look at boxplots for Length, Diameter, and Height seperated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
+Below we have three boxplots graphs for the different size measurements as they relate to sex. As you can see infants are smaller across the three variables, with the lowest difference in mean found in the height variable. Another important obseration to note is that males and females appear to have an almost equal mean across all variables or possibly females are slightly larger. In order to continue to further test this SMART question we need to run more in depth analysis.
 
 
 ```{r, results='markup'}
@@ -177,26 +181,14 @@ bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, fill=Sex, group=Sex)) +
          panel.border = element_rect(fill = NA),
          panel.grid.major.y = element_line(color = "light grey"),
          panel.grid.minor.y = element_line(color = "light grey"),
-         panel.grid.major.x = element_blank()) 
-
-bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, color=Sex, group=Sex)) +
-         geom_boxplot(outlier.shape=8, outlier.color='red') +
-         stat_boxplot(geom='errorbar', width=0.3) +
-
+         panel.grid.major.x = element_blank()) +
          xlab('Sex') +
          ylab('Length (mm)') +
          ggtitle('Length of Abalone Shells by Sex')
 
-bp.Sex_Length
-Anova.Sex_Length <- aov(Length ~ Sex, data = abalone)
-summary(Anova.Sex_Length)
-tukey.Sex_Length <- TukeyHSD(Anova.Sex_Length)
-tukey.Sex_Length
 
 
-
-bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, fill=Sex, group=Sex))
-bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, color=Sex, group=Sex)) +
+bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, fill=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          theme(plot.title = element_text(hjust = 0.5),
          panel.background = element_blank(),
@@ -208,15 +200,9 @@ bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, color=Sex, group=Sex))
          ylab('Diameter (mm)') +
          ggtitle('Diameter of Abalone Shells by Sex')
          
-bp.Sex_Diameter
-Anova.Sex_Diameter <- aov(Diameter ~ Sex, data = abalone)
-summary(Anova.Sex_Diameter)   
-tukey.Sex_Diameter <- TukeyHSD(Anova.Sex_Diameter)
-tukey.Sex_Diameter
 
 
-bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, fill=Sex, group=Sex))
-bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, color=Sex, group=Sex)) +
+bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, fill=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          theme(plot.title = element_text(hjust = 0.5),
          panel.background = element_blank(),
@@ -227,7 +213,23 @@ bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, color=Sex, group=Sex)) +
          xlab('Sex') +
          ylab('Height (mm)') +
          ggtitle('Height of Abalone Shells by Sex')
-         
+```
+
+So to analyze the question further we ran an anova test for each physical variable. As expected we have a small p-value for each of the anova tests below. This is due to the significantly smaller infant means. Since the null hypothesis for an anova is that all means are equal, the smaller infant abalone means cause us to reject the null. However the anova test does not provide information on whether the Male and Female means are significantly different. In order to evaluate the differences between male and female we also ran a tukey test on each anova. This test did in fact conclude that the means were significantly different from one another.
+
+```{r, results='markup'}
+bp.Sex_Length
+Anova.Sex_Length <- aov(Length ~ Sex, data = abalone)
+summary(Anova.Sex_Length)
+tukey.Sex_Length <- TukeyHSD(Anova.Sex_Length)
+tukey.Sex_Length
+
+bp.Sex_Diameter
+Anova.Sex_Diameter <- aov(Diameter ~ Sex, data = abalone)
+summary(Anova.Sex_Diameter)   
+tukey.Sex_Diameter <- TukeyHSD(Anova.Sex_Diameter)
+tukey.Sex_Diameter
+       
 bp.Sex_Height         
 Anova.Sex_Height <- aov(Height ~ Sex, data = abalone)
 summary(Anova.Sex_Height)         
@@ -401,6 +403,7 @@ ggplot(abalone, aes(x=Rings, y=WholeWeight)) + geom_point(color='blue') + ggtitl
 
 ## Conclusion
 
+As mentioned preiously in our introduction, abalones are a delicacy in many parts of the world, specifically in east and southeast Asia, as well as Chile in South America. This desire for abalone meat has led to their overfishing and population decline. Our linear model would help stop this population decline by providing information to fishermen, fisherwomen, and farmers on which abalones to harvest and which to return to the ocean. Since weight and diameter are nice predictors for the amount of meat, a harester could easily weigh and measure a shell and harvest those with an expected high meat content while throwing back the non ideal abalones to their environment. Furthermore, our analysis could help legislators create legislation on measurement thresholds within the fishing community. These are common practices for other marine animals such as crabs.
 
 
 
