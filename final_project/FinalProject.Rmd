@@ -23,9 +23,12 @@ library(tidyverse)
 library(corrplot)
 library(ggplot2)
 library(faraway)
+library(gclus)
+library(scales)
+library(car)
 library(reghelper)
 library(scales)
-
+library(stargazer)
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
 options(scientific=T, digits = 3) 
@@ -81,6 +84,7 @@ The SMART questions that we will be asking are:
 * What physical measurement is the best predictor of the age of the abalone shell?  
 * Does gender affect the size of the abalone shell? 
 * Do males or females live longer among the abalone species? 
+* Which weight variable is the best predictor of the age of the abalone shell?
 * How much of an abalone’s body weight is its blood? 
 
 ### Do males or females live longer in the abalone species?
@@ -137,14 +141,37 @@ First, we would like to use `corplot` to visualize the dataset to have a better 
 #make the corplot
 abalone2 <- abalone[-c(1)]
 M <- cor(abalone2)
-corplot1 <- corrplot(M,method = "number",title = "Corrplot of physical measurement")
+corplot1 <- corrplot(M,method = "number")
 corplot1
+mtext("Corrplot", at=0.8, line=-0.5, cex=1.5)
+```
+Then, we would like to create scatterplots of physical measurements and `Age` based on the dataset.
+
+```{r,results='markup'}
+scatterplot1 <-scatterplot(Age~Length, data = abalone,
+                           xlab = "Length", ylab = "Age", main="scatterplot of length and age")
+scatterplot2 <-scatterplot(Age~Diameter, data = abalone,
+                           xlab = "Diameter", ylab = "Age", main="scatterplot of diameter and age")
+scatterplot3 <-scatterplot(Age~Height, data = abalone,
+                           xlab = "Height", ylab = "Age", main="scatterplot of height and age")
+scatterplot4 <-scatterplot(Age~WholeWeight, data = abalone,
+                           xlab = "WholeWeight", ylab = "Age", main="scatterplot of whole weight and age")
+scatterplot5 <-scatterplot(Age~ShuckedWeight, data = abalone,
+                           xlab = "ShuckedWeight", ylab = "Age", main="scatterplot of shucked weight and age")
+scatterplot6 <-scatterplot(Age~VisceraWeight, data = abalone,
+                           xlab = "VisceraWeight", ylab = "Age", main="scatterplot of viscera weight and age")
+scatterplot7 <-scatterplot(Age~ShellWeight, data = abalone,
+                           xlab = "shell weight", ylab = "Age", main="scatterplot of shell weight and age")
 ```
 
-Then, we would like to run a linear regression to find the best predictor of the age of abalone shell.
+From all the scatterplots above, we can conclude that there is a linear relationship between most of the physical measurements and `Age`, except `Height`. Therefore, we would like to run a linear regression to find the best predictor of the age of abalone shell.
 
 ```{r,results='markup'}
 lmphysical <- lm(Rings~Length+Diameter+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data = abalone)
+#standardize the model
+beta(lmphysical)
+#summary of the model
+stargazer(lmphysical,type = "text")
 summary(lmphysical)
 ```
 
@@ -152,11 +179,16 @@ According to the result of the regression, we can get the following equation: \
 `Rings` = 2.985-1.572`Length`+13.361`Diameter`+11.826`Height`+9.247`WholeWeight`-20.214`ShuckedWeight`-9.830`VisceraWeight`+8.576`ShellWeight`\
 Because we get very small P-values and the adjusted R-squared is 0.5268, we can say that this model is statistically significant.
 Meanwhile, all of the variables except `Length` are statistically significant. 
-We can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of the abalone's meat.
+
+Because the coefficient on `ShuckedWeight` is the biggest, so we can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of meat.
 
 ### Does gender affect the size of the abalone shell?
 
-To evaluate this question we will first look at the boxplots for Length, Diameter, and Height separated by Sex. Then we will run ANOVA tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
+To evaluate this question we will first look at the boxplots for Length, Diameter, and Height separated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
+
+We can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of the abalone's meat.
+
+
 
 ```{r, results='markup'}
 
@@ -232,6 +264,17 @@ tukey.Sex_Height
 ```
 
 
+Now, we would like to draw a residual plot to see if the dataset satisfies the homoskedasticity or not.
+
+```{r,results='markup'}
+res <- resid(lmphysical)
+residualplot1 <- plot(fitted(lmphysical),res,
+                      xlab = "fitted value", ylab = "residuals", main = "residual plot") + 
+  abline(0,0)
+```
+
+### Which weight variable is the best predictor of the age of the abalone shell? 
+
 ```{r}
 lm1 <- lm(data=abalone, Rings ~ WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight)
 summary(lm1)
@@ -259,12 +302,13 @@ vif(lm8)
 ```
 
 ### How much of an abalone’s body weight is its blood?
+
 ```{r}
 abalone$'BloodPercentage' <- abalone$VisceraWeight/abalone$ShuckedWeight
 mean(abalone$`BloodPercentage`)
 ```
 
-To answer this question, we created a new  variable entitled `BloodPercentage` that is the amount of weight from viscera divided by the total weight of the meat. 
+To answer this question, we created a new variable entitled `BloodPercentage` that is the amount of weight from viscera divided by the total weight of the meat. 
 
 The mean of this variable is `r mean(abalone$BloodPercentage)`, indicating that `r mean(abalone$BloodPercentage)*100`% of the average abalone's weight is from the viscera organs.
 
@@ -390,7 +434,6 @@ ggplot(abalone, aes(x=Rings, y=WholeWeight)) + geom_point(color='blue') + ggtitl
 
 ```{r, results='markup'}
 
-
 #plotting residuals to check for heteroskedasticity 
 #plots for length as the dependent variable
 plot(lm3)
@@ -420,8 +463,6 @@ plot(lm10)
 4. Multicollinearity 
 
 ```{r, results='markup'}
-
-
 #checking for multicollinearity
 #vif(lm3)
 #vif(lm2)
@@ -430,9 +471,11 @@ vif(lm8)
 vif(lm9)
 vif(lm10)
 
+
 xkabledply(lm10)
 
 ```
+
 
 ## Conclusion
 
