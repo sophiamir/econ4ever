@@ -72,7 +72,7 @@ For this project, we will be using a data set on abalone caught at sea. The data
 We've added a tenth variable `Age` to make explanations of the data easier.
 * `Age`: Age of the abalone based on its number of rings
 
-To begin with, we make a summary of the data.
+To begin, we make a summary of the data.
 
 ```{r, results='markup'}
 xkablesummary(abalone, title = "Summary Statistics for the Abalone Data:")
@@ -176,75 +176,6 @@ beta(lmphysical)
 #summary of the model
 summary(lmphysical)
 
-#we ran a bunch of regressions and checked the R-squared values and VIF values for each one to find the best linear regression model
-#the regressions were basically running each variable on the rest (except for Age since Age and Rings are perfectly collinear) to see which ones had VIF values under 10 and were statistically significant
-#we're left with the model Length~Age+Diameter+Height+WholeWeight+Sex in which Height is not statistically significant and taking it out doesn't affect the model much and doesn't change the R-squared value but we'll take it out during the analysis
-
-#lm2 <- lm(Age~Length+Diameter+Height+WholeWeight+Sex, data=abalone)
-
-lm3 <- lm(Length~Age+Diameter+Height+WholeWeight+Sex, data=abalone)
-
-#lm4 <- lm(Diameter~Rings+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data=abalone)
-
-#lm5 <- lm(Height~Rings+Diameter+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data=abalone)
-
-#lm6 <- lm(WholeWeight~Rings+Diameter+Height, data=abalone)
-
-
-lm7 <- lm(ShuckedWeight~Diameter+Height, data = abalone)
-
-lm8 <- lm(ShuckedWeight~I(Diameter*Diameter)+Height, data = abalone)
-
-lm9 <- lm(ShuckedWeight~Diameter+I(Height*Height), data = abalone)
-
-lm10 <- lm(log(ShuckedWeight)~Diameter+Height, data = abalone)
-
-#comparing R-squared values 
-summary(lm2)
-summary(lm3)
-summary(lm4)
-summary(lm5)
-summary(lm6)
-summary(lm7)
-summary(lm8)
-summary(lm9)
-summary(lm10)
-
-xkabledply(lm3)
-xkabledply(lm7)
-xkabledply(lm10)
-
-#summary(lm2)
-summary(lm3)
-#summary(lm4)
-#summary(lm5)
-#summary(lm6)
-
-
-#checking for multicollinearity
-vif(lm3)
-vif(lm2)
-vif(lm7)
-vif(lm8)
-vif(lm9)
-vif(lm10)
-
-#plotting residuals to check for heteroskedasticity 
-#plots for length as the dependent variable
-plot(lm3)
-
-#plots for age as the dependent variables
-plot(lm2)
-
-plot(lm7)
-plot(lm8)
-plot(lm9)
-plot(lm10)
-
-beta(lm3)
-
-
-#shows functional form misspecification - let's try creating linear models with quadratics and see if it fixes the heteroskedasticity or at least changes the shape of the fitted vs residuals graph
 
 ```
 
@@ -255,6 +186,7 @@ Meanwhile, all of the variables except `Length` are statistically significant.
 We can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of meat.
 
 ### Does gender affect the size of the abalone shell?
+
 To evaluate this question we will first look at the boxplots for Length, Diameter, and Height separated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
 
 ```{r, results='markup'}
@@ -377,7 +309,94 @@ ggplot(data=abalone, aes(x=BloodPercentage)) + geom_histogram(color='red') + ggt
 
 ## Model Building
 
-Model Assumptions: 
+### Linear Model Assumptions: 
+
+1. Linear in parameters.
+2. The independent variables data were randomly selected.
+3. There is no multicollinearity between the independent variables.
+4. The error term has no correlation with any of the independent variables i.e. the zero conditional mean assumption is not violated.
+5. Homoskedasticity.
+6. Error terms are normally distributed.
+
+Keeping these assumptions in mind, we will start specifying our model. We will test our chosen model to see if it violates any of these assumptions beyond the acceptable amount. We will be using qqplots, the Shapiro-Wilkes test, and bar plots to check the distribution of our data. We will be using the residual plots to check for homoscedasticity, and influential outliers.
+
+### Model Specification
+
+```{r}
+
+#we ran a bunch of regressions and checked the R-squared values and VIF values for each one to find the best linear regression model
+#the regressions were basically running each variable on the rest (except for Age since Age and Rings are perfectly collinear) to see which ones had VIF values under 10 and were statistically significant
+#we're left with the model Length~Age+Diameter+Height+WholeWeight+Sex in which Height is not statistically significant and taking it out doesn't affect the model much and doesn't change the R-squared value but we'll take it out during the analysis
+
+#lm2 <- lm(Age~Length+Diameter+Height+WholeWeight+Sex, data=abalone)
+
+lm3 <- lm(Length~Age+Diameter+Height+WholeWeight+Sex, data=abalone)
+
+#lm4 <- lm(Diameter~Rings+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data=abalone)
+
+#lm5 <- lm(Height~Rings+Diameter+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data=abalone)
+
+#lm6 <- lm(WholeWeight~Rings+Diameter+Height, data=abalone)
+
+
+lm7 <- lm(ShuckedWeight~Diameter+Height, data = abalone)
+
+lm8 <- lm(ShuckedWeight~I(Diameter*Diameter)+Height, data = abalone)
+
+lm9 <- lm(ShuckedWeight~Diameter+I(Height*Height), data = abalone)
+
+lm10 <- lm(log(ShuckedWeight)~Diameter+Height, data = abalone)
+
+#comparing R-squared values 
+summary(lm2)
+summary(lm3)
+summary(lm4)
+summary(lm5)
+summary(lm6)
+summary(lm7)
+summary(lm8)
+summary(lm9)
+summary(lm10)
+
+xkabledply(lm3)
+xkabledply(lm7)
+xkabledply(lm10)
+
+#summary(lm2)
+summary(lm3)
+#summary(lm4)
+#summary(lm5)
+#summary(lm6)
+
+
+#checking for multicollinearity
+vif(lm3)
+vif(lm2)
+vif(lm7)
+vif(lm8)
+vif(lm9)
+vif(lm10)
+
+#plotting residuals to check for heteroskedasticity 
+#plots for length as the dependent variable
+plot(lm3)
+
+#plots for age as the dependent variables
+plot(lm2)
+
+plot(lm7)
+plot(lm8)
+plot(lm9)
+plot(lm10)
+
+beta(lm3)
+
+
+#shows functional form misspecification - let's try creating linear models with quadratics and see if it fixes the heteroskedasticity or at least changes the shape of the fitted vs residuals graph
+
+
+
+```
 
 1. `Rings` are normally distributed. 
 ```{r, results='markup'}
@@ -413,6 +432,7 @@ plot1 <- plot(fitted.values(fullmodel),res)
 plot1
 ```
 From the residual plot above, it is clear that there is outlier in the plot. But most of the residuals are the same value.
+
 
 4. Multicollinearity 
 
