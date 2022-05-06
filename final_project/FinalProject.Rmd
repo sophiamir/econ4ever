@@ -202,11 +202,11 @@ We can make the conclusion that the best predictor in physical measurement is `S
 bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, fill=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') + 
          theme(plot.title = element_text(hjust = 0.5),
-         panel.background = element_blank(),
-         panel.border = element_rect(fill = NA),
-         panel.grid.major.y = element_line(color = "light grey"),
-         panel.grid.minor.y = element_line(color = "light grey"),
-         panel.grid.major.x = element_blank()),
+               panel.background = element_blank(),
+               panel.border = element_rect(fill = NA),
+               panel.grid.major.y = element_line(color = "light grey"),
+               panel.grid.minor.y = element_line(color = "light grey"),
+               panel.grid.major.x = element_blank(),
                panel.background = element_blank(),
                panel.border = element_rect(fill = NA),
                panel.grid.major.y = element_line(color = "light grey"),
@@ -292,7 +292,6 @@ tukey.Sex_Height
 
 ```
 
-=======
 
 Now, we would like to draw a residual plot to see if the dataset satisfies the homoskedasticity or not.
 
@@ -303,32 +302,31 @@ residualplot1 <- plot(fitted(lmphysical),res,
   abline(0,0)
 ```
 
-### Which weight variable is the best predictor of the age of the abalone shell? 
 
 ```{r}
-lm1 <- lm(data=abalone, Rings ~ WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight)
-summary(lm1)
+#lm1 <- lm(data=abalone, Rings ~ WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight)
+#summary(lm1)
 
-lm2 <- lm(data=abalone, Rings ~ WholeWeight)
-summary(lm2)
+#lm2 <- lm(data=abalone, Rings ~ WholeWeight)
+#summary(lm2)
 
-lm3 <- lm(data=abalone, Rings ~ ShuckedWeight)
-summary(lm3)
+#lm3 <- lm(data=abalone, Rings ~ ShuckedWeight)
+#summary(lm3)
 
-lm4 <- lm(data=abalone, Rings ~ VisceraWeight)
-summary(lm4)
+#lm4 <- lm(data=abalone, Rings ~ VisceraWeight)
+#summary(lm4)
 
-lm5 <- lm(data=abalone, Rings ~ ShellWeight)
-summary(lm5)
+#lm5 <- lm(data=abalone, Rings ~ ShellWeight)
+#summary(lm5)
 
 
-lm6<-lm(data=abalone,ShuckedWeight~WholeWeight+Length+Diameter+Height)
-summary(lm6)
-vif(lm6)
+#lm6<-lm(data=abalone,ShuckedWeight~WholeWeight+Length+Diameter+Height)
+#summary(lm6)
+#vif(lm6)
 
-lm8<-lm(data=abalone,ShuckedWeight~Diameter+Height+WholeWeight)
-summary(lm8)
-vif(lm8)
+#lm8<-lm(data=abalone,ShuckedWeight~Diameter+Height+WholeWeight)
+#summary(lm8)
+#vif(lm8)
 ```
 
 ### How much of an abalone’s body weight is its blood?
@@ -379,7 +377,6 @@ plot(fullmodel)
 # We can choose what variable we want to plot with Rings here to visualize correct functional form #
 ggplot(abalone, aes(x=Rings, y=WholeWeight)) + geom_point(color='blue') + ggtitle("Whole Weight vs. Rings") + xlab("Rings") + ylab("Whole Weight") + geom_smooth(method='lm')
 ```
-
 
 
 ## Model Building
@@ -504,18 +501,21 @@ Neither gave us the best version of the model, so we decided to take the log of 
 
 Model 9: log(ShuckedWeight)~Diameter+Height
 
-The residual plots for Model 9 are:
+The residual plots and summary statistics for Model 9 are:
 
 ```{r}
 lm10 <- lm(log(ShuckedWeight)~Diameter+Height, data = abalone)
+
+#summary(lm10)
+xkabledply(lm10)
 
 plot(lm10)
 
 ```
 
-Taking the log of the dependent variable gives us a better distribution of the residuals and turns the influential outlier into a noninfluential outlier. It does not completely get rid of the heteroscedasticity but that is not a big problem since we can just use robust standard errors for t-distribution and F-distribution testing if necessary. 
+Taking the log of the dependent variable gives us a better distribution of the residuals and turns the influential outlier into a noninfluential outlier. It does not completely get rid of the heteroscedasticity but that is not a big problem since we can just use robust standard errors for t-distribution and F-distribution testing if necessary. Taking the log also improved the R-squared value of our model from 80% to 90.2% while still keeping all our coefficients statistically significant.
 
-4. Multicollinearity 
+- Multicollinearity 
 
 Next, we looked at the Variance Inflaction Factors to check for multicollinearity within our models. 
 
@@ -532,24 +532,24 @@ The VIF values for Model 7 indicate that there is no multicollinearity between D
 vif(lm8)
 ```
 
-Similarly, the VIF values for Model 8 indicate that there is no multicollinearity. 
+Similarly, the VIF values for Model 7 indicate that there is no multicollinearity. 
 
 ```{r, results='markup'}
 vif(lm9)
 ```
 
-The VIF values drop in Model 9 to 1.19.
+The VIF values drop in Model 8 to 1.19.
 
 ```{r, results='markup'}
 vif(lm10)
 ```
 
 
-The VIF values in Model 10 increse to 3.28 again, but there is still no evidence of multicollinearity within these models. 
+The VIF values in Model 9 increase to 3.28 again, but there are still within the acceptable range and show no evidence of high multicollinearity within these models. 
 
 ```{r, results='markup'}
 
-xkabledply(lm10)
+
 ```
 
 
