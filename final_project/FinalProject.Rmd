@@ -426,7 +426,7 @@ ggplot(abalone, aes(x=Rings, y=WholeWeight)) + geom_point(color='blue') + ggtitl
 
 ```{r,results='markup'}
 res <- resid(fullmodel)
-plot1 <- plot(fitted.values(fullmodel),res)
+plot1 <- plot(fitted.values(fullmodel),res,xlab = "fitted values",ylab = "residuals",main = "residual plot") + abline(0,0)
 plot1
 ```
 From the residual plot above, it is clear that there is outlier in the plot. But most of the residuals are the same value.
