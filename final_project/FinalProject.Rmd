@@ -1,20 +1,20 @@
 ---
 title: "Final Project - Abalone"
-author: "econ4ever"
+author: "Group 4: Rebecca Felix, Sophia Mir, Jiaxi Liu, Daniel Dodson-Castillon"
 date: "`r Sys.Date()`"
 output:
-  word_document:
-    toc: yes
-    toc_depth: '3'
-  pdf_document:
-    toc: yes
-    toc_depth: '3'
   html_document:
     code_folding: hide
     number_sections: no
     toc: yes
     toc_depth: 3
     toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+  word_document:
+    toc: yes
+    toc_depth: '3'
 ---
 
 ```{r init, include=FALSE}
@@ -140,7 +140,7 @@ The data shows that there is no gender disparity when it comes to the lifespan o
 
 ### What physical measurement is the best predictor of age in an abalone?
 
-First, we would like to use `corplot` to visualize the dataset to have a better view of the associations between variables.
+First, we would like to use `corrplot` to visualize the dataset to have a better view of the associations between variables.
 ```{r,results='markup'}
 #make the corplot
 abalone2 <- abalone[-c(1)]
@@ -149,6 +149,8 @@ corplot1 <- corrplot(M,method = "number")
 corplot1
 mtext("Corrplot", at=0.8, line=-0.5, cex=1.5)
 ```
+
+
 Then, we would like to create scatterplots of physical measurements and `Age` based on the dataset.
 
 ```{r,results='markup'}
@@ -269,16 +271,6 @@ tukey.Sex_Height
 ```
 
 
-Now, we would like to draw a residual plot to see if the dataset satisfies the homoskedasticity or not.
-
-```{r,results='markup'}
-res <- resid(lmphysical)
-residualplot1 <- plot(fitted(lmphysical),res,
-                      xlab = "fitted value", ylab = "residuals", main = "residual plot") + 
-  abline(0,0)
-```
-
-
 ```{r}
 #lm1 <- lm(data=abalone, Rings ~ WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight)
 #summary(lm1)
@@ -326,34 +318,6 @@ ggplot(data=abalone, aes(x=BloodPercentage)) + geom_histogram(color='red') + ggt
                            panel.grid.major.x = element_blank()) 
 ```
 
-This histogram allows us to see that the distrubition of this percentage is relatively normal. 
-
-1. `Rings` are normally distributed. 
-```{r, results='markup'}
-# Q Q plot #
-qqnorm(abalone$Rings, main="Q-Q Plot of Rings in Abalone Shells")
-
-# Histogram #
-ggplot(data=abalone, aes(x=Rings)) + geom_histogram(bins=30, color='blue') + ggtitle("Distribution of Ring Count in Abalone Shells") + xlab("Number of Rings") + ylab("Count") + theme(plot.title = element_text(hjust = 0.5),
-                           panel.background = element_blank(),
-                           panel.border = element_rect(fill = NA),
-                           panel.grid.major.y = element_line(color = "light grey"),
-                           panel.grid.minor.y = element_line(color = "light grey"),
-                           panel.grid.major.x = element_blank())
-```
-
-2. Functional form: there is a linear relationship between `Rings` and the independent variables.
-```{r, results='markup'}
-
-# All LM plots #
-fullmodel <- lm(data=abalone, Rings~.)
-plot(fullmodel)
-
-# Scatterplot #
-# We can choose what variable we want to plot with Rings here to visualize correct functional form #
-ggplot(abalone, aes(x=Rings, y=WholeWeight)) + geom_point(color='blue') + ggtitle("Whole Weight vs. Rings") + xlab("Rings") + ylab("Whole Weight") + geom_smooth(method='lm')
-```
-
 
 ## Model Building
 
@@ -373,10 +337,15 @@ Keeping these assumptions in mind, we will start specifying our model. We will t
 The Abalone data allows us to create a model to predict the weight of the meat of Abalones after the shell has been removed. This can have real-world applications in preventing overfishing by incentivizing fisherwomen and fishermen to only capture the mollusks that will have the most meat rather than fishing indiscriminately. This is the model that we ultimately found to be the best. In order to create this model we ran a great number of regressions trying out different model specifications, some of which are documented below:
 
 Model 1: Age~Length+Diameter+Height+WholeWeight+Sex
+
 Model 2: Length~Age+Diameter+Height+WholeWeight+Sex
+
 Model 3: Diameter~Rings+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight
+
 Model 4: Height~Rings+Diameter+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight
+
 Model 5: WholeWeight~Rings+Diameter+Height
+
 Model 6: ShuckedWeight~Diameter+Height
 
 We checked the R-squared and VIF values of all the models that we created as an initial test of the goodness of fit. Model 2 had the highest R-squared value at 97.5% and had VIF values under 10. However, the model did not have any useful practical applications so we ultimately decided to move forward with model 6. Model 6 initially had an R-squared value of 80% and VIFs below 10. We've added the summary tables for Model 2 and Model 6 below. All the coefficients in our chosen model are statistically significant at the 1% level.
@@ -435,6 +404,19 @@ xkabledply(lm7)
 
 Here we start testing our model for heteroscedasticity and multicollinearity.
 
+
+- Functional form 
+
+Checking if there is a linear relationship between `ShuckedWeight` and the independent variables, `Diameter` and `Height`.
+```{r, results='markup'}
+
+# Scatterplot #
+# We can choose what variable we want to plot with Rings here to visualize correct functional form #
+ggplot(abalone, aes(y=ShuckedWeight, x=Diameter)) + geom_point(color='blue') + ggtitle("Shucked Weight vs. Diameter") + ylab("Shucked Weight") + xlab("Diameter") + geom_smooth(method='lm')
+
+ggplot(abalone, aes(y=ShuckedWeight, x=Height)) + geom_point(color='blue') + ggtitle("Shucked Weight vs. Height") + ylab("Shucked Weight") + xlab("Whole Weight") + geom_smooth(method='lm')
+```
+
 - Homoscedasticity 
 
 We created residual plots using Model 6 to check for heteroskedasticity. Plotting it initially we get the graphs shown below:
@@ -450,9 +432,12 @@ We created residual plots using Model 6 to check for heteroskedasticity. Plottin
 
 plot(lm7)
 ```
+
+
 Looking at the plots we can see that the distribution is not normal and the error terms are not normally distributed. The Cook's Distance also tells us that we have at least one influential outlier. In order to fix some of these issues, we tried to change the functional form of our model. The first solution we tried was to take the square of each dependent variable in turn to get Models 7 & 8.
 
 Model 7: ShuckedWeight~I(Diameter*Diameter)+Height
+
 Model 8: ShuckedWeight~Diameter+I(Height*Height)
 
 Plotting Model 7 gave us the following residual plots:
@@ -531,7 +516,9 @@ The VIF values in Model 9 increase to 3.28 again, but there are still within the
 
 ## Conclusion
 
-As mentioned preiously in our introduction, abalones are a delicacy in many parts of the world, specifically in east and southeast Asia, as well as Chile in South America. This desire for abalone meat has led to their overfishing and population decline. Our linear model would help stop this population decline by providing information to fishermen, fisherwomen, and farmers on which abalones to harvest and which to return to the ocean. Since weight and diameter are nice predictors for the amount of meat, a harester could easily weigh and measure a shell and harvest those with an expected high meat content while throwing back the non ideal abalones to their environment. Furthermore, our analysis could help legislators create legislation on measurement thresholds within the fishing community. These are common practices for other marine animals such as crabs.
+As mentioned preiously in our introduction, abalones are a delicacy in many parts of the world, specifically in east and southeast Asia, as well as Chile in South America. This desire for abalone meat has led to their overfishing and population decline. Our linear model would help mitigate this population decline by providing information to fishermen, fisherwomen, and farmers on which abalones to harvest and which to return to the ocean. Since weight and diameter are nice predictors for the amount of meat, a harvester could easily weigh and measure a shell and harvest those with an expected high meat content while throwing back the non ideal abalones to their environment. Furthermore, our analysis could help legislators create legislation on measurement thresholds within the fishing community. These are common practices for other marine animals such as crabs.
+
+Further research may evaluate the quality of the environment that the abalones are grown in, which may improve the predictability of the model. Potentially relevant variables include water quality, water temperature, biodiversity, food, and disease. 
 
 
 ## References
