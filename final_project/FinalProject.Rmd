@@ -1,18 +1,20 @@
 ---
 title: "Final Project - Abalone"
 author: "econ4ever"
-# date: "today"
 date: "`r Sys.Date()`"
-output: 
-  html_document:
-    code_folding: hide
-    number_sections: false
+output:
+  word_document:
     toc: yes
-    toc_depth: 3
-    toc_float: yes
+    toc_depth: '3'
   pdf_document:
     toc: yes
     toc_depth: '3'
+  html_document:
+    code_folding: hide
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
 ---
 
 ```{r init, include=FALSE}
@@ -23,9 +25,12 @@ library(tidyverse)
 library(corrplot)
 library(ggplot2)
 library(faraway)
+library(gclus)
+library(scales)
+library(car)
 library(reghelper)
 library(scales)
-
+library(stargazer)
 # knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
 options(scientific=T, digits = 3) 
@@ -37,6 +42,8 @@ options(scientific=T, digits = 3)
 # Abalones R' Us
 
 ## Introduction 
+
+Abalones are marine snails and are considered to be a delicacy in most parts of the world. Their shells also have iridescent properties which allows them to be used in jewelry and accessory making. Due to their many uses, especially in cookery Abalones are at threat of extinction due to over fishing. The team goal of this analysis is to create a model that would help stop the abalone population decline by proiding fishermen and fisherwomen information on which abalones to harvest and avoid nonselective overfishing. Similar practices exist for other marine and shell organisms. With this in mind, some of the variables in the dataset that we will be exploring are size, gender, age and weight.
 
 ```{r}
 
@@ -81,6 +88,7 @@ The SMART questions that we will be asking are:
 * What physical measurement is the best predictor of the age of the abalone shell?  
 * Does gender affect the size of the abalone shell? 
 * Do males or females live longer among the abalone species? 
+* Which weight variable is the best predictor of the age of the abalone shell?
 * How much of an abalone’s body weight is its blood? 
 
 ### Do males or females live longer in the abalone species?
@@ -137,14 +145,37 @@ First, we would like to use `corplot` to visualize the dataset to have a better 
 #make the corplot
 abalone2 <- abalone[-c(1)]
 M <- cor(abalone2)
-corplot1 <- corrplot(M,method = "number",title = "Corrplot of physical measurement")
+corplot1 <- corrplot(M,method = "number")
 corplot1
+mtext("Corrplot", at=0.8, line=-0.5, cex=1.5)
+```
+Then, we would like to create scatterplots of physical measurements and `Age` based on the dataset.
+
+```{r,results='markup'}
+scatterplot1 <-scatterplot(Age~Length, data = abalone,
+                           xlab = "Length", ylab = "Age", main="scatterplot of length and age")
+scatterplot2 <-scatterplot(Age~Diameter, data = abalone,
+                           xlab = "Diameter", ylab = "Age", main="scatterplot of diameter and age")
+scatterplot3 <-scatterplot(Age~Height, data = abalone,
+                           xlab = "Height", ylab = "Age", main="scatterplot of height and age")
+scatterplot4 <-scatterplot(Age~WholeWeight, data = abalone,
+                           xlab = "WholeWeight", ylab = "Age", main="scatterplot of whole weight and age")
+scatterplot5 <-scatterplot(Age~ShuckedWeight, data = abalone,
+                           xlab = "ShuckedWeight", ylab = "Age", main="scatterplot of shucked weight and age")
+scatterplot6 <-scatterplot(Age~VisceraWeight, data = abalone,
+                           xlab = "VisceraWeight", ylab = "Age", main="scatterplot of viscera weight and age")
+scatterplot7 <-scatterplot(Age~ShellWeight, data = abalone,
+                           xlab = "shell weight", ylab = "Age", main="scatterplot of shell weight and age")
 ```
 
-Then, we would like to run a linear regression to find the best predictor of the age of abalone shell.
+From all the scatterplots above, we can conclude that there is a linear relationship between most of the physical measurements and `Age`, except `Height`. Therefore, we would like to run a linear regression to find the best predictor of the age of abalone shell.
 
 ```{r,results='markup'}
 lmphysical <- lm(Rings~Length+Diameter+Height+WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight, data = abalone)
+#standardize the model
+beta(lmphysical)
+#summary of the model
+stargazer(lmphysical,type = "text")
 summary(lmphysical)
 ```
 
@@ -152,11 +183,18 @@ According to the result of the regression, we can get the following equation: \
 `Rings` = 2.985-1.572`Length`+13.361`Diameter`+11.826`Height`+9.247`WholeWeight`-20.214`ShuckedWeight`-9.830`VisceraWeight`+8.576`ShellWeight`\
 Because we get very small P-values and the adjusted R-squared is 0.5268, we can say that this model is statistically significant.
 Meanwhile, all of the variables except `Length` are statistically significant. 
-We can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of the abalone's meat.
+
+Because the coefficient on `ShuckedWeight` is the biggest, so we can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of meat.
 
 ### Does gender affect the size of the abalone shell?
 
-To evaluate this question we will first look at the boxplots for Length, Diameter, and Height separated by Sex. Then we will run ANOVA tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
+To evaluate this question we will first look at the boxplots for Length, Diameter, and Height separated by Sex. Then we will run anova tests on the previous three variables, and if necessary we will use a Tukey post hoc test.
+
+
+Below we have three boxplots graphs for the different size measurements as they relate to sex. As you can see infants are smaller across the three variables, with the lowest difference in mean found in the height variable. Another important obseration to note is that males and females appear to have an almost equal mean across all variables or possibly females are slightly larger. In order to continue to further test this SMART question we need to run more in depth analysis.
+
+We can make the conclusion that the best predictor in physical measurement is `ShuckedWeight`, which means the weight of the abalone's meat.
+
 
 ```{r, results='markup'}
 
@@ -164,6 +202,11 @@ To evaluate this question we will first look at the boxplots for Length, Diamete
 bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, fill=Sex, group=Sex)) +
          geom_boxplot(outlier.shape=8, outlier.color='red') + 
          theme(plot.title = element_text(hjust = 0.5),
+         panel.background = element_blank(),
+         panel.border = element_rect(fill = NA),
+         panel.grid.major.y = element_line(color = "light grey"),
+         panel.grid.minor.y = element_line(color = "light grey"),
+         panel.grid.major.x = element_blank()),
                panel.background = element_blank(),
                panel.border = element_rect(fill = NA),
                panel.grid.major.y = element_line(color = "light grey"),
@@ -179,6 +222,9 @@ bp.Sex_Length <- ggplot(abalone, aes(x=Sex, y=Length, color=Sex, group=Sex)) +
          ggtitle('Length of Abalone Shells by Sex')
 
 
+bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, fill=Sex, group=Sex)) +
+
+
 bp.Sex_Length
 Anova.Sex_Length <- aov(Length ~ Sex, data = abalone)
 summary(Anova.Sex_Length)
@@ -190,6 +236,7 @@ bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, fill=Sex, group=Sex)) 
 
 bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, fill=Sex, group=Sex))
 bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, color=Sex, group=Sex)) +
+
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          theme(plot.title = element_text(hjust = 0.5),
          panel.background = element_blank(),
@@ -201,17 +248,15 @@ bp.Sex_Diameter <- ggplot(abalone, aes(x=Sex, y=Diameter, color=Sex, group=Sex))
          ylab('Diameter (mm)') +
          ggtitle('Diameter of Abalone Shells by Sex')
          
-bp.Sex_Diameter
-Anova.Sex_Diameter <- aov(Diameter ~ Sex, data = abalone)
-summary(Anova.Sex_Diameter)   
-tukey.Sex_Diameter <- TukeyHSD(Anova.Sex_Diameter)
-tukey.Sex_Diameter
 
 
 bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, fill=Sex, group=Sex)) +
 
+
+
 bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, fill=Sex, group=Sex))
 bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, color=Sex, group=Sex)) +
+
          geom_boxplot(outlier.shape=8, outlier.color='red') +
          theme(plot.title = element_text(hjust = 0.5),
          panel.background = element_blank(),
@@ -222,7 +267,23 @@ bp.Sex_Height <- ggplot(abalone, aes(x=Sex, y=Height, color=Sex, group=Sex)) +
          xlab('Sex') +
          ylab('Height (mm)') +
          ggtitle('Height of Abalone Shells by Sex')
-         
+```
+
+So to analyze the question further we ran an anova test for each physical variable. As expected we have a small p-value for each of the anova tests below. This is due to the significantly smaller infant means. Since the null hypothesis for an anova is that all means are equal, the smaller infant abalone means cause us to reject the null. However the anova test does not provide information on whether the Male and Female means are significantly different. In order to evaluate the differences between male and female we also ran a tukey test on each anova. This test did in fact conclude that the means were significantly different from one another.
+
+```{r, results='markup'}
+bp.Sex_Length
+Anova.Sex_Length <- aov(Length ~ Sex, data = abalone)
+summary(Anova.Sex_Length)
+tukey.Sex_Length <- TukeyHSD(Anova.Sex_Length)
+tukey.Sex_Length
+
+bp.Sex_Diameter
+Anova.Sex_Diameter <- aov(Diameter ~ Sex, data = abalone)
+summary(Anova.Sex_Diameter)   
+tukey.Sex_Diameter <- TukeyHSD(Anova.Sex_Diameter)
+tukey.Sex_Diameter
+       
 bp.Sex_Height         
 Anova.Sex_Height <- aov(Height ~ Sex, data = abalone)
 summary(Anova.Sex_Height)         
@@ -232,6 +293,17 @@ tukey.Sex_Height
 ```
 
 =======
+
+Now, we would like to draw a residual plot to see if the dataset satisfies the homoskedasticity or not.
+
+```{r,results='markup'}
+res <- resid(lmphysical)
+residualplot1 <- plot(fitted(lmphysical),res,
+                      xlab = "fitted value", ylab = "residuals", main = "residual plot") + 
+  abline(0,0)
+```
+
+### Which weight variable is the best predictor of the age of the abalone shell? 
 
 ```{r}
 lm1 <- lm(data=abalone, Rings ~ WholeWeight+ShuckedWeight+VisceraWeight+ShellWeight)
@@ -260,12 +332,13 @@ vif(lm8)
 ```
 
 ### How much of an abalone’s body weight is its blood?
+
 ```{r}
 abalone$'BloodPercentage' <- abalone$VisceraWeight/abalone$ShuckedWeight
 mean(abalone$`BloodPercentage`)
 ```
 
-To answer this question, we created a new  variable entitled `BloodPercentage` that is the amount of weight from viscera divided by the total weight of the meat. 
+To answer this question, we created a new variable entitled `BloodPercentage` that is the amount of weight from viscera divided by the total weight of the meat. 
 
 The mean of this variable is `r mean(abalone$BloodPercentage)`, indicating that `r mean(abalone$BloodPercentage)*100`% of the average abalone's weight is from the viscera organs.
 
@@ -280,6 +353,34 @@ ggplot(data=abalone, aes(x=BloodPercentage)) + geom_histogram(color='red') + ggt
 ```
 
 This histogram allows us to see that the distrubition of this percentage is relatively normal. 
+
+1. `Rings` are normally distributed. 
+```{r, results='markup'}
+# Q Q plot #
+qqnorm(abalone$Rings, main="Q-Q Plot of Rings in Abalone Shells")
+
+# Histogram #
+ggplot(data=abalone, aes(x=Rings)) + geom_histogram(bins=30, color='blue') + ggtitle("Distribution of Ring Count in Abalone Shells") + xlab("Number of Rings") + ylab("Count") + theme(plot.title = element_text(hjust = 0.5),
+                           panel.background = element_blank(),
+                           panel.border = element_rect(fill = NA),
+                           panel.grid.major.y = element_line(color = "light grey"),
+                           panel.grid.minor.y = element_line(color = "light grey"),
+                           panel.grid.major.x = element_blank())
+```
+
+2. Functional form: there is a linear relationship between `Rings` and the independent variables.
+```{r, results='markup'}
+
+# All LM plots #
+fullmodel <- lm(data=abalone, Rings~.)
+plot(fullmodel)
+
+# Scatterplot #
+# We can choose what variable we want to plot with Rings here to visualize correct functional form #
+ggplot(abalone, aes(x=Rings, y=WholeWeight)) + geom_point(color='blue') + ggtitle("Whole Weight vs. Rings") + xlab("Rings") + ylab("Whole Weight") + geom_smooth(method='lm')
+```
+
+
 
 ## Model Building
 
@@ -296,7 +397,7 @@ Keeping these assumptions in mind, we will start specifying our model. We will t
 
 ### Model Specification
 
-The Abalone data allows us to create a model to predict the weight of the meat of Abalones after the shell has been removed. This can have real-world applications in preventing overfishing by incentivising fisherwomen and fishermen to only capture the mollusks that will have the most meat rather than fishing indiscriminately. This is the model that we ultimately found to be the best. In order to create this model we ran a great number of regressions trying out different model specifications, some of which are documented below:
+The Abalone data allows us to create a model to predict the weight of the meat of Abalones after the shell has been removed. This can have real-world applications in preventing overfishing by incentivizing fisherwomen and fishermen to only capture the mollusks that will have the most meat rather than fishing indiscriminately. This is the model that we ultimately found to be the best. In order to create this model we ran a great number of regressions trying out different model specifications, some of which are documented below:
 
 Model 1: Age~Length+Diameter+Height+WholeWeight+Sex
 Model 2: Length~Age+Diameter+Height+WholeWeight+Sex
@@ -355,66 +456,64 @@ xkabledply(lm7)
 
 #shows functional form misspecification - let's try creating linear models with quadratics and see if it fixes the heteroskedasticity or at least changes the shape of the fitted vs residuals graph
 
-
 ```
 
 ### Model Features Testing
 
+Here we start testing our model for heteroscedasticity and multicollinearity.
 
-1. `Rings` are normally distributed. 
-```{r, results='markup'}
-# Q Q plot #
-qqnorm(abalone$Rings, main="Q-Q Plot of Rings in Abalone Shells")
+- Homoscedasticity 
 
-# Histogram #
-ggplot(data=abalone, aes(x=Rings)) + geom_histogram(bins=30, color='blue') + ggtitle("Distribution of Ring Count in Abalone Shells") + xlab("Number of Rings") + ylab("Count") + theme(plot.title = element_text(hjust = 0.5),
-                           panel.background = element_blank(),
-                           panel.border = element_rect(fill = NA),
-                           panel.grid.major.y = element_line(color = "light grey"),
-                           panel.grid.minor.y = element_line(color = "light grey"),
-                           panel.grid.major.x = element_blank())
-```
-
-2. Functional form: there is a linear relationship between `Rings` and the independent variables.
-```{r, results='markup'}
-
-# All LM plots #
-fullmodel <- lm(data=abalone, Rings~.)
-plot(fullmodel)
-
-# Scatterplot #
-# We can choose what variable we want to plot with Rings here to visualize correct functional form #
-ggplot(abalone, aes(x=Rings, y=WholeWeight)) + geom_point(color='blue') + ggtitle("Whole Weight vs. Rings") + xlab("Rings") + ylab("Whole Weight") + geom_smooth(method='lm')
-```
-
-3. Homoscedasticity 
+We created residual plots using Model 6 to check for heteroskedasticity. Plotting it initially we get the graphs shown below:
 
 ```{r, results='markup'}
+
 #plotting residuals to check for heteroskedasticity 
 #plots for length as the dependent variable
-plot(lm3)
+#plot(lm3)
 
 #plots for age as the dependent variables
-plot(lm2)
+#plot(lm2)
 
 plot(lm7)
+```
+Looking at the plots we can see that the distribution is not normal and the error terms are not normally distributed. The Cook's Distance also tells us that we have at least one influential outlier. In order to fix some of these issues, we tried to change the functional form of our model. The first solution we tried was to take the square of each dependent variable in turn to get Models 7 & 8.
 
+Model 7: ShuckedWeight~I(Diameter*Diameter)+Height
+Model 8: ShuckedWeight~Diameter+I(Height*Height)
 
+Plotting Model 7 gave us the following residual plots:
+
+```{r, results='markup'}
 lm8 <- lm(ShuckedWeight~I(Diameter*Diameter)+Height, data = abalone)
 
 plot(lm8)
 
+```
 
+
+Plotting Model 8 gave us the following residual plots:
+```{r}
 lm9 <- lm(ShuckedWeight~Diameter+I(Height*Height), data = abalone)
 
 plot(lm9)
 
+```
 
+Neither gave us the best version of the model, so we decided to take the log of our dependent variable and create Model 9:
+
+Model 9: log(ShuckedWeight)~Diameter+Height
+
+The residual plots for Model 9 are:
+
+```{r}
 lm10 <- lm(log(ShuckedWeight)~Diameter+Height, data = abalone)
 
 plot(lm10)
 
 ```
+
+Taking the log of the dependent variable gives us a better distribution of the residuals and turns the influential outlier into a noninfluential outlier. It does not completely get rid of the heteroscedasticity but that is not a big problem since we can just use robust standard errors for t-distribution and F-distribution testing if necessary. 
 
 4. Multicollinearity 
 
@@ -445,14 +544,18 @@ The VIF values drop in Model 9 to 1.19.
 vif(lm10)
 ```
 
+
 The VIF values in Model 10 increse to 3.28 again, but there is still no evidence of multicollinearity within these models. 
 
 ```{r, results='markup'}
+
 xkabledply(lm10)
 ```
 
+
 ## Conclusion
 
+As mentioned preiously in our introduction, abalones are a delicacy in many parts of the world, specifically in east and southeast Asia, as well as Chile in South America. This desire for abalone meat has led to their overfishing and population decline. Our linear model would help stop this population decline by providing information to fishermen, fisherwomen, and farmers on which abalones to harvest and which to return to the ocean. Since weight and diameter are nice predictors for the amount of meat, a harester could easily weigh and measure a shell and harvest those with an expected high meat content while throwing back the non ideal abalones to their environment. Furthermore, our analysis could help legislators create legislation on measurement thresholds within the fishing community. These are common practices for other marine animals such as crabs.
 
 
 ## References
